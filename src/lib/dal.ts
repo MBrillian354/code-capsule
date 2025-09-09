@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { decrypt } from "@/lib/session";
 import { redirect } from "next/navigation";
 import postgres from "postgres";
-import type { User } from "@/lib/definitions";
+import type { User, Capsule, UserCapsule } from "@/lib/definitions";
 import { z } from "zod";
 
 /**
@@ -216,3 +216,107 @@ export const getUserCapsules = cache(async (userId: string) => {
         return [];
     }
 });
+
+export const getCapsule = cache(async (capsuleId: string) => {
+    /**
+     * Fetch a specific capsule by ID.
+     *
+     * Parameters:
+     * - capsuleId: string - the ID of the capsule to fetch
+     *
+     * Returns:
+     * - Capsule object or null if not found or on error
+     */
+    try {
+        const capsules = await sql`
+            SELECT id, title, total_pages, content, created_by, created_at
+            FROM capsules 
+            WHERE id = ${capsuleId}
+        `;
+        return capsules[0] || null;
+    } catch (error) {
+        console.log("Failed to fetch capsule", error);
+        return null;
+    }
+});
+
+export const getUserCapsule = cache(async (userId: string, capsuleId: string) => {
+    /**
+     * Fetch user's progress for a specific capsule.
+     *
+     * Parameters:
+     * - userId: string - the ID of the user
+     * - capsuleId: string - the ID of the capsule
+     *
+     * Returns:
+     * - UserCapsule object or null if not found or on error
+     */
+    try {
+        const userCapsules = await sql`
+            SELECT id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date
+            FROM user_capsules 
+            WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
+        `;
+        return userCapsules[0] || null;
+    } catch (error) {
+        console.log("Failed to fetch user capsule", error);
+        return null;
+    }
+});
+
+export const upsertUserCapsule = async (params: {
+    userId: string;
+    capsuleId: string;
+    lastPageRead?: number | null;
+    overallProgress?: number | null;
+    bookmarkedDate?: string | null;
+}) => {
+    /**
+     * Insert or update user's progress for a capsule.
+     *
+     * Parameters:
+     * - userId: string - the ID of the user
+     * - capsuleId: string - the ID of the capsule
+     * - lastPageRead: number | null - the last page the user read
+     * - overallProgress: number | null - the overall progress percentage
+     * - bookmarkedDate: string | null - ISO timestamp when bookmarked
+     *
+     * Returns:
+     * - The user capsule ID (existing or newly created)
+     */
+    try {
+        const { userId, capsuleId, lastPageRead, overallProgress, bookmarkedDate } = params;
+        
+        // Convert undefined to null for database
+        const lastPage = lastPageRead ?? null;
+        const progress = overallProgress ?? null;
+        const bookmarked = bookmarkedDate ?? null;
+        
+        // Try to update existing record first
+        const existing = await sql`
+            UPDATE user_capsules 
+            SET 
+                last_page_read = ${lastPage},
+                overall_progress = ${progress},
+                bookmarked_date = ${bookmarked}
+            WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
+            RETURNING id
+        `;
+
+        if (existing.length > 0) {
+            return existing[0].id;
+        }
+
+        // If no existing record, insert new one
+        const id = crypto.randomUUID();
+        await sql`
+            INSERT INTO user_capsules (id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date)
+            VALUES (${id}, ${userId}, ${capsuleId}, ${lastPage}, ${progress}, ${bookmarked})
+        `;
+        
+        return id;
+    } catch (error) {
+        console.log("Failed to upsert user capsule", error);
+        throw new Error("Failed to save user capsule progress");
+    }
+};

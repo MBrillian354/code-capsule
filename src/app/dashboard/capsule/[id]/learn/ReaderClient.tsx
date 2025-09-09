@@ -5,7 +5,7 @@ import { Box, Button, Card, LinearProgress, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { marked } from "marked";
 
-type CapsulePage = { page: number; body: string };
+type CapsulePage = { page: number; page_title?: string; body: string };
 
 export type CapsuleClient = {
     id: string;
@@ -48,14 +48,21 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
         const params = new URLSearchParams(searchParams.toString());
         params.set("p", String(page));
         router.replace(`${pathname}?${params.toString()}`);
+        
         // Save progress (optimistic)
         const newLast = Math.max(saved?.last_page_read || 0, page);
         const newProgress = computeProgress(newLast, totalPages);
         setProgress(newProgress);
+        
+        // Save to localStorage for immediate feedback
         setSavedProgress(capsule.id, {
             last_page_read: newLast,
             overall_progress: newProgress,
         });
+        
+        // Save to database (fire and forget)
+        saveProgressToDatabase(capsule.id, newLast, newProgress);
+        
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page]);
 
@@ -109,7 +116,7 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
                         <Typography
                             variant="subtitle2"
                         >
-                            {"current.page_title"}
+                            {current.page_title || `Page ${page}`}
                         </Typography>
                     </Box>
                     <Typography variant="body2" color="text.secondary">
@@ -198,5 +205,24 @@ function setSavedProgress(id: string, data: ProgressSave) {
         window.localStorage.setItem(storageKey(id), JSON.stringify(data));
     } catch {
         // no-op
+    }
+}
+
+async function saveProgressToDatabase(capsuleId: string, lastPageRead: number, overallProgress: number) {
+    try {
+        await fetch("/api/capsule/progress", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                capsuleId,
+                lastPageRead,
+                overallProgress,
+            }),
+        });
+    } catch (error) {
+        console.warn("Failed to save progress to database:", error);
+        // We don't throw here since localStorage still works as fallback
     }
 }

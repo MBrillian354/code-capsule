@@ -181,7 +181,7 @@ export default async function Page() {
                                                 variant="contained" 
                                                 size="small" 
                                                 component={Link}
-                                                href={`/dashboard/learn/${capsule.id}`}
+                                                href={`/dashboard/capsule/${capsule.id}/learn`}
                                             >
                                                 Continue Reading
                                             </Button>
