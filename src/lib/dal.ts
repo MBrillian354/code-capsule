@@ -286,23 +286,65 @@ export const upsertUserCapsule = async (params: {
      */
     try {
         const { userId, capsuleId, lastPageRead, overallProgress, bookmarkedDate } = params;
+
+        // Detect which optional fields were explicitly provided by the caller.
+        const providedLastPage = Object.prototype.hasOwnProperty.call(params, "lastPageRead");
+        const providedProgress = Object.prototype.hasOwnProperty.call(params, "overallProgress");
+        const providedBookmarked = Object.prototype.hasOwnProperty.call(params, "bookmarkedDate");
+
+    // Normalize provided values to concrete types for the postgres template types.
+    const lastPageVal: number | null = providedLastPage ? (lastPageRead ?? null) : null;
+    const progressVal: number | null = providedProgress ? (overallProgress ?? null) : null;
+    const bookmarkedVal: string | null = providedBookmarked ? (bookmarkedDate ?? null) : null;
+
+    // Check if a row already exists for this user+capsule.
+        const existing = await sql`
+            SELECT id FROM user_capsules WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
+        `;
+
+        if (existing.length) {
+            // Update only the columns that were provided (this avoids wiping other fields to NULL).
+            const existingId = existing[0].id as string;
+
+            if (providedLastPage) {
+                await sql`
+                    UPDATE user_capsules
+                    SET last_page_read = ${lastPageVal}
+                    WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
+                `;
+            }
+
+            if (providedProgress) {
+                await sql`
+                    UPDATE user_capsules
+                    SET overall_progress = ${progressVal}
+                    WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
+                `;
+            }
+
+            if (providedBookmarked) {
+                await sql`
+                    UPDATE user_capsules
+                    SET bookmarked_date = ${bookmarkedVal}
+                    WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
+                `;
+            }
+
+            return existingId;
+        }
+
+        // No existing row -> insert. For omitted optional fields store NULL.
         const id = crypto.randomUUID();
-        const lastPage = lastPageRead ?? null;
-        const progress = overallProgress ?? null;
-        const bookmarked = bookmarkedDate ?? null;
-        
-        // Requires a unique constraint on (user_id, capsule_id)
-        const rows = await sql`
+        const lastPage = lastPageVal;
+        const progress = progressVal;
+        const bookmarked = bookmarkedVal;
+
+        await sql`
             INSERT INTO user_capsules (id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date)
             VALUES (${id}, ${userId}, ${capsuleId}, ${lastPage}, ${progress}, ${bookmarked})
-            ON CONFLICT (user_id, capsule_id)
-            DO UPDATE SET
-                last_page_read = EXCLUDED.last_page_read,
-                overall_progress = EXCLUDED.overall_progress,
-                bookmarked_date = EXCLUDED.bookmarked_date
-            RETURNING id
         `;
-        return rows[0].id as string;
+
+        return id;
     } catch (error) {
         console.log("Failed to upsert user capsule", error);
         throw new Error("Failed to save user capsule progress");
