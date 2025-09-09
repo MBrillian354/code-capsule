@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-    Box,
-    Button,
-    Card,
-    LinearProgress,
-    Typography,
-} from "@mui/material";
+import { Box, Button, Card, LinearProgress, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { marked } from "marked";
 
@@ -105,12 +99,22 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
                         mb: 1,
                     }}
                 >
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                        {capsule.title}
-                    </Typography>
+                    <Box>
+                        <Typography
+                            variant="subtitle1"
+                            sx={{ fontWeight: 600 }}
+                        >
+                            {capsule.title}
+                        </Typography>
+                        <Typography
+                            variant="subtitle2"
+                        >
+                            {"current.page_title"}
+                        </Typography>
+                    </Box>
                     <Typography variant="body2" color="text.secondary">
-                        Chapter {page} | {Math.round(progress)}%
-                        {/* Chapter {page} of {totalPages} • {Math.round(progress)}% */}
+                        {/* Chapter {page} | {Math.round(progress)}% */}
+                        Chapter {page}/{totalPages} • {Math.round(progress)}%
                     </Typography>
                 </Box>
                 <LinearProgress variant="determinate" value={progress} />
@@ -121,12 +125,14 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
                 elevation={0}
                 variant="outlined"
                 sx={{
-                    px: { xs: 4, md: 6 },
-                    py: { xs: 2, md: 4 },
+                    pt: 2,
+                    pb: 4,
+                    px: { xs: 3, md: 5 },
                     backgroundColor: "white",
                 }}
             >
                 <article
+                    className="markdown"
                     // We trust placeholder content here; in production sanitize.
                     dangerouslySetInnerHTML={{
                         __html: marked.parse(current.body) as string,
