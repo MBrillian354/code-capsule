@@ -6,18 +6,29 @@ import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { User } from "@/lib/definitions";
 import bcrypt from "bcryptjs";
-import postgres from "postgres";
-
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: "require" });
 
 async function getUser(email: string): Promise<User | undefined> {
     try {
-        const user = await sql<
-            User[]
-        >`SELECT * FROM users WHERE email=${email}`;
-        return user[0];
+        const baseUrl =
+            process.env.NEXTAUTH_URL ||
+            process.env.NEXT_PUBLIC_APP_URL ||
+            "http://localhost:3000";
+        const res = await fetch(`${baseUrl}/api/users/by-email`, {
+            method: "POST",
+            headers: {
+                "content-type": "application/json",
+                "x-internal-token": process.env.NEXTAUTH_SECRET || "",
+            },
+            body: JSON.stringify({ email }),
+            cache: "no-store",
+        });
+
+        if (res.status === 404) return undefined;
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        const user: User = await res.json();
+        return user;
     } catch (error) {
-        console.error("Failed to fetch user:", error);
+        console.error("Failed to fetch user via API:", error);
         throw new Error("Failed to fetch user.");
     }
 }
@@ -36,11 +47,7 @@ export const { auth, signIn, signOut } = NextAuth({
 
                 if (parsedCredentials.success) {
                     const { email, password } = parsedCredentials.data;
-                    console.log("\n\n\n\n");
-                    console.log("Parsed Credentials:", parsedCredentials.data);
                     const user = await getUser(email);
-                    console.log("Fetched User:", user);
-
                     if (!user) return null;
 
                     const passwordsMatch = await bcrypt.compare(
