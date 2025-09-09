@@ -23,21 +23,25 @@ export default function Page() {
 
     return (
         <Box className="min-h-screen flex items-center justify-center bg-gray-50">
-            <Paper elevation={3} className="p-8 w-full max-w-md">
+            <Paper
+                elevation={0}
+                variant="outlined"
+                className="p-8 w-full max-w-md"
+            >
                 <Typography
                     variant="h4"
                     component="h1"
-                    gutterBottom
                     align="center"
-                    className="mb-6 font-bold text-primary"
+                    className="text-primary"
                 >
                     CodeCapsule
                 </Typography>
                 <Typography
-                    variant="h4"
+                    variant="h5"
                     component="h2"
                     gutterBottom
                     align="center"
+                    sx={{ fontWeight: "bold", marginBottom: 4 }}
                 >
                     Login
                 </Typography>
