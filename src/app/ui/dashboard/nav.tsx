@@ -16,6 +16,8 @@ import {
     MenuItem,
     Divider,
 } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 import {
     Dashboard as DashboardIcon,
     Search as SearchIcon,
@@ -48,6 +50,8 @@ export default function Nav({
     user: User | null;
 }) {
     const pathname = usePathname();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -65,7 +69,7 @@ export default function Nav({
         <Box className="py-20">
             <List>
                 {navItems.map((item, index) => (
-                    <ListItem key={index} disablePadding>
+                    <ListItem onClick={onToggle} key={index} disablePadding>
                         <Link href={item.href} className="w-full">
                             <ListItemButton
                                 sx={{
@@ -140,11 +144,17 @@ export default function Nav({
                 </Toolbar>
             </AppBar>
             <Drawer
-                variant="permanent"
+                variant={isMobile ? "temporary" : "permanent"}
                 anchor="left"
                 open={open}
+                onClose={isMobile ? onToggle : undefined}
+                ModalProps={isMobile ? { keepMounted: true } : undefined}
                 sx={(theme) => ({
-                    width: open ? drawerWidthOpen : drawerWidthClosed,
+                    width: isMobile
+                        ? undefined
+                        : open
+                        ? drawerWidthOpen
+                        : drawerWidthClosed,
                     flexShrink: 0,
                     whiteSpace: "nowrap",
                     transition: theme.transitions.create("width", {
@@ -152,7 +162,11 @@ export default function Nav({
                         duration: theme.transitions.duration.enteringScreen,
                     }),
                     "& .MuiDrawer-paper": {
-                        width: open ? drawerWidthOpen : drawerWidthClosed,
+                        width: isMobile
+                            ? drawerWidthOpen
+                            : open
+                            ? drawerWidthOpen
+                            : drawerWidthClosed,
                         boxSizing: "border-box",
                         overflowX: "hidden",
                         transition: theme.transitions.create("width", {
