@@ -1,25 +1,10 @@
 "use server";
 
-import { z } from 'zod'
+import { SignupSchema } from '@/lib/validators';
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
 import { getUserByEmail, createUser } from '@/lib/dal'
 import { redirect } from 'next/navigation'
-
-const SignupSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters.'),
-  email: z.email('Please enter a valid email.'),
-  password: z.string()
-    .min(8, 'Password must be at least 8 characters.')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must contain at least one uppercase letter, one lowercase letter, and one number.'
-    ),
-  confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match.",
-  path: ["confirmPassword"]
-});
 
 export async function createAccount(
   prevState: string | undefined,

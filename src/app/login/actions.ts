@@ -1,15 +1,10 @@
 "use server";
 
-import { z } from 'zod'
+import { LoginSchema } from '@/lib/validators';
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
 import { getUserByEmail } from '@/lib/dal'
 import { redirect } from 'next/navigation'
-
-const LoginSchema = z.object({
-  email: z.email('Please enter a valid email.'),
-  password: z.string().min(1, 'Password field must not be empty.'),
-})
 
 export async function authenticate(
   prevState: string | undefined,
