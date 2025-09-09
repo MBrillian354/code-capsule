@@ -1,7 +1,7 @@
 "use server";
 
 import { createCapsuleFromUrl, CreateCapsuleResult } from "@/lib/capsules";
-import { ProgressUpdate } from "./types";
+import type { ProgressUpdate } from "@/types/capsule";
 
 export async function createCapsuleWithProgress(
     url: string,

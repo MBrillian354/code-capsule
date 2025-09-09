@@ -11,13 +11,7 @@ import {
     CircularProgress,
 } from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation";
-
-type ProgressUpdate = {
-    step: 'fetching' | 'extracting' | 'chunking' | 'generating' | 'finalizing' | 'completed' | 'failed';
-    message: string;
-    error?: string;
-    capsuleId?: string;
-};
+import type { CreateCapsuleApiResult, ProgressUpdate } from "@/types/capsule";
 
 type ProgressState = {
     step: 'fetching' | 'extracting' | 'chunking' | 'generating' | 'finalizing' | 'completed' | 'failed';
@@ -48,12 +42,10 @@ const stepProgress = {
 };
 
 // Avoid importing server-only modules in client; call API route instead
-type ApiResult = { ok: true; id: string } | { ok: false; error: string };
-
 async function createCapsuleViaApi(
     url: string,
     onProgress: (update: ProgressUpdate) => void
-): Promise<ApiResult> {
+): Promise<CreateCapsuleApiResult> {
     try {
         onProgress({ step: 'fetching', message: stepMessages.fetching });
 
@@ -69,7 +61,7 @@ async function createCapsuleViaApi(
         // Finalizing state before parsing
         onProgress({ step: 'finalizing', message: stepMessages.finalizing });
 
-        const data = (await res.json()) as ApiResult;
+    const data = (await res.json()) as CreateCapsuleApiResult;
 
         if (data.ok) {
             onProgress({ step: 'completed', message: stepMessages.completed, capsuleId: data.id });
@@ -81,6 +73,61 @@ async function createCapsuleViaApi(
         const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
         onProgress({ step: 'failed', message: stepMessages.failed, error: errorMessage });
         return { ok: false, error: errorMessage };
+    }
+}
+
+async function createCapsuleViaSse(
+    url: string,
+    onProgress: (update: ProgressUpdate) => void
+) : Promise<CreateCapsuleApiResult> {
+    try {
+        const resp = await fetch(`/api/capsule/create/stream?url=${encodeURIComponent(url)}`, {
+            method: 'GET',
+            headers: { Accept: 'text/event-stream' },
+        })
+
+        if (!resp.ok || !resp.body) {
+            return { ok: false, error: 'Failed to start stream' }
+        }
+
+        const reader = resp.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        let result: CreateCapsuleApiResult | undefined
+
+        while (true) {
+            const { value, done } = await reader.read()
+            if (done) break
+            buffer += decoder.decode(value, { stream: true })
+
+            let idx
+            while ((idx = buffer.indexOf('\n\n')) !== -1) {
+                const chunk = buffer.slice(0, idx)
+                buffer = buffer.slice(idx + 2)
+
+                const lines = chunk.split('\n')
+                let event: string | undefined
+                let dataStr = ''
+                for (const line of lines) {
+                    if (line.startsWith('event:')) event = line.slice(6).trim()
+                    if (line.startsWith('data:')) dataStr += line.slice(5).trim()
+                }
+
+                if (!event) continue
+                try {
+                    const data = dataStr ? JSON.parse(dataStr) : undefined
+                    if (event === 'progress' && data) onProgress(data as ProgressUpdate)
+                    if (event === 'completed' && data?.id) result = { ok: true, id: data.id }
+                    if (event === 'failed' && data?.error) result = { ok: false, error: data.error }
+                } catch {
+                    // ignore malformed chunks
+                }
+            }
+        }
+
+        return result ?? { ok: false, error: 'Stream ended unexpectedly' }
+    } catch (err) {
+        return { ok: false, error: err instanceof Error ? err.message : 'Unknown error' }
     }
 }
 
@@ -120,9 +167,12 @@ export default function CreateCapsulePage() {
         if (hasStarted.current) return;
         hasStarted.current = true;
 
-        const startCreation = async () => {
+    const startCreation = async () => {
             try {
-                const result = await createCapsuleViaApi(url, (progressUpdate: ProgressUpdate) => {
+        const useStreaming = true
+        const runner = useStreaming ? createCapsuleViaSse : createCapsuleViaApi
+
+        const result = await runner(url, (progressUpdate: ProgressUpdate) => {
                     setProgress({
                         step: progressUpdate.step,
                         message: progressUpdate.message,
