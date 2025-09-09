@@ -143,12 +143,14 @@ export default function Page() {
                                 sx={{ backgroundColor: "white", flex: 1 }}
                                 placeholder="Enter URL to convert into a capsule..."
                                 disabled={isPending}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <CodeIcon />
-                                        </InputAdornment>
-                                    ),
+                                slotProps={{
+                                    input: {
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <CodeIcon />
+                                            </InputAdornment>
+                                        ),
+                                    },
                                 }}
                             />
                             <Button
@@ -161,7 +163,11 @@ export default function Page() {
                         </Stack>
                     </Suspense>
                     {errorMessage && (
-                        <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                        <Typography
+                            variant="body2"
+                            color="error"
+                            sx={{ mt: 1 }}
+                        >
                             {errorMessage}
                         </Typography>
                     )}
