@@ -20,6 +20,13 @@ import {
     Menu as MenuIcon,
 } from "@mui/icons-material";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const navItems = [
+    { href: "/dashboard", icon: DashboardIcon, primary: "Dashboard" },
+    { href: "/dashboard/explore", icon: SearchIcon, primary: "Explore" },
+    { href: "/dashboard/bookmarks", icon: BookmarkIcon, primary: "Saved" },
+];
 
 export const drawerWidthOpen = 240;
 export const drawerWidthClosed = 60;
@@ -31,87 +38,49 @@ export default function Nav({
     open: boolean;
     onToggle: () => void;
 }) {
+    const pathname = usePathname();
+
     const drawer = (
         <Box className="py-20">
             <List>
-                <ListItem disablePadding>
-                    <Link href="/dashboard">
-                        <ListItemButton component="a">
-                            <ListItemIcon>
-                                <DashboardIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary="Dashboard"
-                                sx={(theme) => ({
-                                    opacity: open ? 1 : 0,
-                                    whiteSpace: "nowrap",
-                                    width: open ? "auto" : 0,
-                                    overflow: "hidden",
-                                    transition: theme.transitions.create(
-                                        "opacity",
-                                        {
-                                            duration:
-                                                theme.transitions.duration
-                                                    .shortest,
-                                        }
-                                    ),
-                                })}
-                            />
-                        </ListItemButton>
-                    </Link>
-                </ListItem>
-                <ListItem disablePadding>
-                    <Link href="/dashboard/explore" passHref legacyBehavior>
-                        <ListItemButton component="a">
-                            <ListItemIcon>
-                                <SearchIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary="Explore"
-                                sx={(theme) => ({
-                                    opacity: open ? 1 : 0,
-                                    whiteSpace: "nowrap",
-                                    width: open ? "auto" : 0,
-                                    overflow: "hidden",
-                                    transition: theme.transitions.create(
-                                        "opacity",
-                                        {
-                                            duration:
-                                                theme.transitions.duration
-                                                    .shortest,
-                                        }
-                                    ),
-                                })}
-                            />
-                        </ListItemButton>
-                    </Link>
-                </ListItem>
-                <ListItem disablePadding>
-                    <Link href="/dashboard/bookmarks" passHref legacyBehavior>
-                        <ListItemButton component="a">
-                            <ListItemIcon>
-                                <BookmarkIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                                primary="Saved"
-                                sx={(theme) => ({
-                                    opacity: open ? 1 : 0,
-                                    whiteSpace: "nowrap",
-                                    width: open ? "auto" : 0,
-                                    overflow: "hidden",
-                                    transition: theme.transitions.create(
-                                        "opacity",
-                                        {
-                                            duration:
-                                                theme.transitions.duration
-                                                    .shortest,
-                                        }
-                                    ),
-                                })}
-                            />
-                        </ListItemButton>
-                    </Link>
-                </ListItem>
+                {navItems.map((item, index) => (
+                    <ListItem key={index} disablePadding>
+                        <Link href={item.href} className="w-full">
+                            <ListItemButton
+                                sx={{
+                                    ...(pathname === item.href && {
+                                        backgroundColor: "primary.main",
+                                        color: "primary.contrastText",
+                                        "& .MuiListItemIcon-root": {
+                                            color: "primary.contrastText",
+                                        },
+                                    }),
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <item.icon />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={item.primary}
+                                    sx={(theme) => ({
+                                        opacity: open ? 1 : 0,
+                                        whiteSpace: "nowrap",
+                                        width: open ? "auto" : 0,
+                                        overflow: "hidden",
+                                        transition: theme.transitions.create(
+                                            "opacity",
+                                            {
+                                                duration:
+                                                    theme.transitions.duration
+                                                        .shortest,
+                                            }
+                                        ),
+                                    })}
+                                />
+                            </ListItemButton>
+                        </Link>
+                    </ListItem>
+                ))}
             </List>
         </Box>
     );
