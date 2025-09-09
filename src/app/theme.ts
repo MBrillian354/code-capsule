@@ -19,18 +19,15 @@ const theme = createTheme({
             },
         },
         MuiPaper: {
-            styleOverrides: {
-                root: {
-                    // enforce the border radius for Paper components
-                    borderRadius: 24,
-                },
+            defaultProps: {
+                // keep rounded corners for Paper by default
+                square: false,
             },
-        },
-        MuiAppBar: {
             styleOverrides: {
-                root: {
-                    // enforce the border radius for AppBar components
-                    borderRadius: 0,
+                // target the `rounded` slot so the override only applies
+                // when Paper is meant to be rounded (not globally to every root)
+                rounded: {
+                    borderRadius: 8,
                 },
             },
         },
