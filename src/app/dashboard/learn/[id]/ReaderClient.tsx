@@ -127,7 +127,7 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
                 sx={{
                     pt: 2,
                     pb: 4,
-                    px: { xs: 3, md: 5 },
+                    px: { xs: 2, md: 5 },
                     backgroundColor: "white",
                 }}
             >
