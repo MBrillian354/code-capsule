@@ -12,7 +12,7 @@ import {
     LinearProgress,
     Divider,
 } from "@mui/material";
-import { Search as SearchIcon } from "@mui/icons-material";
+import CodeIcon from "@mui/icons-material/Code";
 import {
     continueLearningSample,
     recentlySavedSamples,
@@ -124,12 +124,12 @@ export default function Page() {
                         fullWidth
                         variant="outlined"
                         sx={{ backgroundColor: "white" }}
-                        placeholder="Search for resources..."
+                        placeholder="Enter URL to convert into a capsule..."
                         slotProps={{
                             input: {
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <SearchIcon />
+                                        <CodeIcon />
                                     </InputAdornment>
                                 ),
                             },
