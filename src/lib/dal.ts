@@ -286,35 +286,23 @@ export const upsertUserCapsule = async (params: {
      */
     try {
         const { userId, capsuleId, lastPageRead, overallProgress, bookmarkedDate } = params;
-        
-        // Convert undefined to null for database
+        const id = crypto.randomUUID();
         const lastPage = lastPageRead ?? null;
         const progress = overallProgress ?? null;
         const bookmarked = bookmarkedDate ?? null;
         
-        // Try to update existing record first
-        const existing = await sql`
-            UPDATE user_capsules 
-            SET 
-                last_page_read = ${lastPage},
-                overall_progress = ${progress},
-                bookmarked_date = ${bookmarked}
-            WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
-            RETURNING id
-        `;
-
-        if (existing.length > 0) {
-            return existing[0].id;
-        }
-
-        // If no existing record, insert new one
-        const id = crypto.randomUUID();
-        await sql`
+        // Requires a unique constraint on (user_id, capsule_id)
+        const rows = await sql`
             INSERT INTO user_capsules (id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date)
             VALUES (${id}, ${userId}, ${capsuleId}, ${lastPage}, ${progress}, ${bookmarked})
+            ON CONFLICT (user_id, capsule_id)
+            DO UPDATE SET
+                last_page_read = EXCLUDED.last_page_read,
+                overall_progress = EXCLUDED.overall_progress,
+                bookmarked_date = EXCLUDED.bookmarked_date
+            RETURNING id
         `;
-        
-        return id;
+        return rows[0].id as string;
     } catch (error) {
         console.log("Failed to upsert user capsule", error);
         throw new Error("Failed to save user capsule progress");

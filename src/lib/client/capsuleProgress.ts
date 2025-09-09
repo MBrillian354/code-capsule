@@ -1,0 +1,48 @@
+// Client-side helpers for capsule reading progress
+
+export function computeProgress(lastPage: number, total: number) {
+  if (!total) return 0;
+  return Math.min(100, Math.max(0, (lastPage / total) * 100));
+}
+
+type ProgressSave = { last_page_read: number; overall_progress: number };
+
+export function storageKey(id: string) {
+  return `capsule-progress:${id}`;
+}
+
+export function getSavedProgress(id: string): ProgressSave | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(storageKey(id));
+    return raw ? (JSON.parse(raw) as ProgressSave) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setSavedProgress(id: string, data: ProgressSave) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(storageKey(id), JSON.stringify(data));
+  } catch {
+    // no-op
+  }
+}
+
+export async function saveProgressToDatabase(
+  capsuleId: string,
+  lastPageRead: number,
+  overallProgress: number
+) {
+  try {
+    await fetch("/api/capsule/progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ capsuleId, lastPageRead, overallProgress }),
+    });
+  } catch (error) {
+    // Best-effort only; server is source of truth eventually
+    console.warn("Failed to save progress to database:", error);
+  }
+}

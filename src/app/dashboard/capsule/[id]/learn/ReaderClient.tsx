@@ -4,6 +4,12 @@ import React from "react";
 import { Box, Button, Card, LinearProgress, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { marked } from "marked";
+import {
+    computeProgress,
+    getSavedProgress,
+    setSavedProgress,
+    saveProgressToDatabase,
+} from "@/lib/client/capsuleProgress";
 
 type CapsulePage = { page: number; page_title?: string; body: string };
 
@@ -55,13 +61,13 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
         setProgress(newProgress);
         
         // Save to localStorage for immediate feedback
-        setSavedProgress(capsule.id, {
+    setSavedProgress(capsule.id, {
             last_page_read: newLast,
             overall_progress: newProgress,
         });
         
         // Save to database (fire and forget)
-        saveProgressToDatabase(capsule.id, newLast, newProgress);
+    saveProgressToDatabase(capsule.id, newLast, newProgress);
         
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page]);
@@ -178,51 +184,4 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
     );
 }
 
-function computeProgress(lastPage: number, total: number) {
-    if (!total) return 0;
-    return Math.min(100, Math.max(0, (lastPage / total) * 100));
-}
-
-type ProgressSave = { last_page_read: number; overall_progress: number };
-
-function storageKey(id: string) {
-    return `capsule-progress:${id}`;
-}
-
-function getSavedProgress(id: string): ProgressSave | null {
-    if (typeof window === "undefined") return null;
-    try {
-        const raw = window.localStorage.getItem(storageKey(id));
-        return raw ? (JSON.parse(raw) as ProgressSave) : null;
-    } catch {
-        return null;
-    }
-}
-
-function setSavedProgress(id: string, data: ProgressSave) {
-    if (typeof window === "undefined") return;
-    try {
-        window.localStorage.setItem(storageKey(id), JSON.stringify(data));
-    } catch {
-        // no-op
-    }
-}
-
-async function saveProgressToDatabase(capsuleId: string, lastPageRead: number, overallProgress: number) {
-    try {
-        await fetch("/api/capsule/progress", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                capsuleId,
-                lastPageRead,
-                overallProgress,
-            }),
-        });
-    } catch (error) {
-        console.warn("Failed to save progress to database:", error);
-        // We don't throw here since localStorage still works as fallback
-    }
-}
+// progress helpers moved to @/lib/client/capsuleProgress

@@ -10,12 +10,22 @@ export type User = {
 // so keep it flexible; prefer a typed shape when the content schema is known.
 export type CapsuleContent = Record<string, unknown> | unknown[] | null;
 
+export type CapsulePageContent = {
+    page_title: string;
+    body: string;
+};
+
+export type StoredCapsuleContent = {
+    meta?: { description?: string; source_url?: string };
+    pages: CapsulePageContent[];
+};
+
 export type Capsule = {
     id: string;
     title?: string | null;
     total_pages?: number | null;
     // JSON column in the DB
-    content?: CapsuleContent;
+    content?: CapsuleContent; // prefer StoredCapsuleContent where applicable
     // references users.id
     created_by?: string | null;
     created_at?: string | null; // ISO timestamp

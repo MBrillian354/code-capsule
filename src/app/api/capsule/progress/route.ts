@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { upsertUserCapsule, getSession } from "@/lib/dal";
 import { z } from "zod";
-
-const UpdateProgressSchema = z.object({
-    capsuleId: z.string().uuid(),
-    lastPageRead: z.number().int().min(1).optional(),
-    overallProgress: z.number().min(0).max(100).optional(),
-    bookmarkedDate: z.string().optional().nullable(),
-});
+import { UpdateProgressSchema } from "@/lib/validators";
 
 export async function POST(request: NextRequest) {
     try {

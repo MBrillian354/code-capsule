@@ -1,6 +1,7 @@
 import { getCapsule, getUserCapsule, verifySession } from "@/lib/dal";
 import { notFound } from "next/navigation";
 import ReaderClient from "./ReaderClient";
+import type { StoredCapsuleContent } from "@/lib/definitions";
 
 export default async function Page(props: {
     params: Promise<{ id: string }>;
@@ -21,8 +22,8 @@ export default async function Page(props: {
     const userProgress = await getUserCapsule(session.userId, id);
     
     // Transform database structure to match client component expectations
-    const content = capsule.content as any;
-    const pages = content?.pages || [];
+    const content = (capsule.content || {}) as StoredCapsuleContent;
+    const pages = content.pages || [];
     
     // Ensure we have valid pages structure
     if (!Array.isArray(pages) || pages.length === 0) {
@@ -32,7 +33,7 @@ export default async function Page(props: {
     const capsuleForClient = {
         id: capsule.id,
         title: capsule.title || "Untitled Capsule",
-        description: content?.meta?.description || "",
+    description: content?.meta?.description || "",
         content: pages.map((page: any, index: number) => ({
             page: index + 1,
             page_title: page.page_title || page.title || `Page ${index + 1}`,

@@ -60,3 +60,12 @@ export const ProgressUpdateSchema = z.object({
 export type ProgressStep = z.infer<typeof ProgressStepEnum>;
 export type ProgressUpdate = z.infer<typeof ProgressUpdateSchema>;
 
+// Capsule progress update (server API payload)
+export const UpdateProgressSchema = z.object({
+    capsuleId: z.string().uuid(),
+    lastPageRead: z.number().int().min(1).optional(),
+    overallProgress: z.number().min(0).max(100).optional(),
+    bookmarkedDate: z.string().optional().nullable(),
+});
+export type UpdateProgressInput = z.infer<typeof UpdateProgressSchema>;
+
