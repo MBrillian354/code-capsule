@@ -11,11 +11,18 @@ const theme = createTheme({
         borderRadius: 8,
     },
     components: {
+        MuiMenu: {
+            styleOverrides: {
+                paper: {
+                    borderRadius: 8,
+                },
+            },
+        },
         MuiPaper: {
             styleOverrides: {
                 root: {
                     // enforce the border radius for Paper components
-                    borderRadius: '24px',
+                    borderRadius: 24,
                 },
             },
         },
@@ -23,7 +30,7 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     // enforce the border radius for AppBar components
-                    borderRadius: '0px',
+                    borderRadius: 0,
                 },
             },
         },
@@ -31,7 +38,7 @@ const theme = createTheme({
             styleOverrides: {
                 root: {
                     // remove default uppercase transform for Button text
-                    textTransform: 'none',
+                    textTransform: "none",
                 },
             },
         },

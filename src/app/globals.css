@@ -9,6 +9,10 @@
   --color-primary: #0070f3;
   --color-secondary: #1c1c1e;
   --color-accent: #e2e8f0;
+  --color-danger: #ff0000;
+  --color-warning: #f5a623;
+  --color-success: #00c851;
+  --color-info: #33b5e5;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
