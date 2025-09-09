@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense } from "react";
+
 import {
     TextField,
     Button,
@@ -9,17 +10,19 @@ import {
     Paper,
     Stack,
 } from "@mui/material";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+
+import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
+import { authenticate } from "@/lib/actions";
 
 export default function Page() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        // Handle login logic here
-        console.log("Email:", email);
-        console.log("Password:", password);
-    };
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+    const [errorMessage, formAction, isPending] = useActionState(
+        authenticate,
+        undefined
+    );
 
     return (
         <Box className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -45,39 +48,60 @@ export default function Page() {
                 >
                     Login
                 </Typography>
-                <Stack
-                    component="form"
-                    onSubmit={handleSubmit}
-                    className="gap-4"
-                >
-                    <TextField
-                        fullWidth
-                        label="Email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        variant="outlined"
-                    />
-                    <TextField
-                        fullWidth
-                        label="Password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        variant="outlined"
-                    />
-                    <Button
-                        fullWidth
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        size="large"
+                <Suspense fallback={<div>Loading...</div>}>
+                    <Stack
+                        component="form"
+                        action={formAction}
+                        className="gap-4"
                     >
-                        Login
-                    </Button>
-                </Stack>
+                        <TextField
+                            fullWidth
+                            id="email"
+                            name="email"
+                            label="Email"
+                            type="email"
+                            required
+                            variant="outlined"
+                        />
+                        <TextField
+                            fullWidth
+                            id="password"
+                            name="password"
+                            label="Password"
+                            type="password"
+                            required
+                            variant="outlined"
+                        />
+                        <input
+                            type="hidden"
+                            name="redirectTo"
+                            value={callbackUrl}
+                        />
+                        <Button
+                            fullWidth
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            aria-disabled={isPending}
+                        >
+                            Login
+                        </Button>
+                        <div
+                            className="flex h-8 items-end space-x-1"
+                            aria-live="polite"
+                            aria-atomic="true"
+                        >
+                            {errorMessage && (
+                                <>
+                                    <ErrorOutlineIcon className="text-red-500" />
+                                    <p className="text-sm text-red-500">
+                                        {errorMessage}
+                                    </p>
+                                </>
+                            )}
+                        </div>
+                    </Stack>
+                </Suspense>
             </Paper>
         </Box>
     );
