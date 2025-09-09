@@ -188,3 +188,31 @@ export async function insertCapsule(params: {
   `;
     return { id };
 }
+
+export const getUserCapsules = cache(async (userId: string) => {
+    /**
+     * Fetch all capsules created by a specific user, sorted by creation date (newest first).
+     *
+     * Parameters:
+     * - userId: string - the ID of the user whose capsules to fetch
+     *
+     * Returns:
+     * - Array of capsule objects with id, title, total_pages, created_at, and content metadata
+     * - Empty array if no capsules found or on error
+     */
+    console.log("Fetching capsules for userId:", userId);
+    try {
+        const capsules = await sql`
+            SELECT id, title, total_pages, created_at, content
+            FROM capsules 
+            WHERE created_by = ${userId}
+            ORDER BY created_at DESC
+        `;
+
+        console.log(`Fetched ${capsules.length} capsules for userId:`, userId);
+        return capsules;
+    } catch (error) {
+        console.log("Failed to fetch user capsules", error);
+        return [];
+    }
+});
