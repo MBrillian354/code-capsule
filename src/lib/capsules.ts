@@ -108,6 +108,7 @@ export async function createCapsuleFromUrl(
         total_pages: pages.length,
         content: contentForDb,
         created_by: session.userId!,
+        created_at: new Date().toISOString(),
     });
 
     return { ok: true, id };

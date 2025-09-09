@@ -165,7 +165,10 @@ const CapsuleDbSchema = z.object({
     title: z.string(),
     total_pages: z.number().int().nonnegative(),
     content: z.any(),
-    created_by: z.string().uuid(),
+    created_by: z.uuid(),
+    created_at: z.string().refine((date) => !isNaN(Date.parse(date)), {
+        message: "Invalid date format",
+    }),
 });
 
 export async function insertCapsule(params: {
@@ -173,6 +176,7 @@ export async function insertCapsule(params: {
     total_pages: number;
     content: unknown;
     created_by: string;
+    created_at: string;
 }): Promise<{ id: string }> {
     const parsed = CapsuleDbSchema.parse(params);
     const id = crypto.randomUUID();
