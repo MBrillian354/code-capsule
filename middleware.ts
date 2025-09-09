@@ -14,6 +14,8 @@ export default async function middleware(req: NextRequest) {
   const cookie = req.cookies.get('session')?.value
   const session = await decrypt(cookie)
 
+  console.log('Middleware session:', session)
+
   // Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !session?.userId) {
     return NextResponse.redirect(new URL('/login', req.nextUrl))
@@ -26,6 +28,17 @@ export default async function middleware(req: NextRequest) {
     !req.nextUrl.pathname.startsWith('/dashboard')
   ) {
     return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
+  }
+
+  // Handle unknown routes (routes not in protectedRoutes or publicRoutes)
+  if (!isProtectedRoute && !isPublicRoute) {
+    if (session?.userId) {
+      // User is authenticated, redirect to dashboard
+      return NextResponse.redirect(new URL('/dashboard', req.nextUrl))
+    } else {
+      // User is not authenticated, redirect to login
+      return NextResponse.redirect(new URL('/login', req.nextUrl))
+    }
   }
 
   return NextResponse.next()
