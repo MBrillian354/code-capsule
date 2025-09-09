@@ -19,6 +19,14 @@ const theme = createTheme({
                 },
             },
         },
+        MuiAppBar: {
+            styleOverrides: {
+                root: {
+                    // enforce the border radius for AppBar components
+                    borderRadius: '0px',
+                },
+            },
+        },
         MuiButton: {
             styleOverrides: {
                 root: {
