@@ -7,7 +7,7 @@ import { getUserByEmail } from '@/lib/dal'
 import { redirect } from 'next/navigation'
 
 const LoginSchema = z.object({
-  email: z.string().email('Please enter a valid email.'),
+  email: z.email('Please enter a valid email.'),
   password: z.string().min(1, 'Password field must not be empty.'),
 })
 
