@@ -26,6 +26,7 @@ import {
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { logout } from "@/app/login/actions";
 
 const navItems = [
     { href: "/dashboard", icon: DashboardIcon, primary: "Dashboard" },
@@ -51,6 +52,10 @@ export default function Nav({
     };
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleLogout = async () => {
+        await logout();
     };
 
     const drawer = (
@@ -211,7 +216,10 @@ export default function Nav({
                     <PersonOutlineOutlinedIcon fontSize="small" /> Profile
                 </MenuItem>
                 <MenuItem
-                    onClick={handleClose}
+                    onClick={() => {
+                        handleClose();
+                        handleLogout();
+                    }}
                     className="flex items-center gap-2 !text-danger"
                 >
                     <Logout fontSize="small" /> Logout

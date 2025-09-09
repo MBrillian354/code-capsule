@@ -1,25 +1,54 @@
 "use server";
 
-// No direct DB access here; this file only wires form actions to auth
+import { z } from 'zod'
+import bcrypt from 'bcryptjs'
+import { createSession } from '@/lib/session'
+import { getUserByEmail } from '@/lib/dal'
+import { redirect } from 'next/navigation'
 
-import { signIn } from "../../../auth";
-import { AuthError } from "next-auth";
+const LoginSchema = z.object({
+  email: z.string().email('Please enter a valid email.'),
+  password: z.string().min(1, 'Password field must not be empty.'),
+})
 
 export async function authenticate(
-    prevState: string | undefined,
-    formData: FormData
+  prevState: string | undefined,
+  formData: FormData
 ) {
-    try {
-        await signIn("credentials", formData);
-    } catch (error) {
-        if (error instanceof AuthError) {
-            switch (error.type) {
-                case "CredentialsSignin":
-                    return "Invalid credentials.";
-                default:
-                    return "Something went wrong.";
-            }
-        }
-        throw error;
+  try {
+    const validatedFields = LoginSchema.safeParse({
+      email: formData.get('email'),
+      password: formData.get('password'),
+    })
+
+    if (!validatedFields.success) {
+      return 'Invalid credentials.'
     }
+
+    const { email, password } = validatedFields.data
+    const user = await getUserByEmail(email)
+    
+    if (!user) {
+      return 'Invalid credentials.'
+    }
+
+    const passwordsMatch = await bcrypt.compare(password, user.password)
+    
+    if (!passwordsMatch) {
+      return 'Invalid credentials.'
+    }
+
+    await createSession(user.id)
+  } catch (error) {
+    console.error('Authentication error:', error)
+    return 'Something went wrong.'
+  }
+  
+  redirect('/dashboard')
+}
+
+export async function logout() {
+  const { deleteSession } = await import('@/lib/session')
+  await deleteSession()
+  redirect('/login')
 }
