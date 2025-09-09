@@ -17,4 +17,5 @@ export type CapsuleClient = {
   last_page_read?: number
   overall_progress?: number
   bookmarked_date?: string
+  last_accessed?: string
 }

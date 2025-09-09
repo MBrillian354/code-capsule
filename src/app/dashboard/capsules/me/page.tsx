@@ -10,8 +10,8 @@ import {
     Button,
     Alert,
 } from "@mui/material";
-import { verifySession, getUserCapsules } from "@/lib/dal";
-import type { Capsule } from "@/lib/definitions";
+import { verifySession, getUserCapsulesWithProgress } from "@/lib/dal";
+import type { CapsuleWithProgress } from "@/lib/definitions";
 import Link from "next/link";
 import IconButton from "@mui/material/IconButton";
 import { Share } from "@mui/icons-material";
@@ -21,9 +21,9 @@ export default async function Page() {
         // Verify session and get user ID
         const session = await verifySession();
         
-        // Fetch user's capsules
-        const capsulesResult = await getUserCapsules(session.userId);
-        const capsules = capsulesResult as Capsule[];
+        // Fetch user's capsules with progress information
+        const capsulesResult = await getUserCapsulesWithProgress(session.userId);
+        const capsules = capsulesResult as CapsuleWithProgress[];
 
         const formatDate = (dateString: string) => {
             try {
@@ -38,31 +38,34 @@ export default async function Page() {
                 if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
                 if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
                 return `${Math.floor(diffInDays / 365)} years ago`;
-            } catch (error) {
+            } catch {
                 return "Unknown date";
             }
         };
 
-        const getDescription = (content: any) => {
+        const getDescription = (content: unknown) => {
             try {
-                return content?.meta?.description || "No description available";
-            } catch (error) {
+                const parsedContent = content as { meta?: { description?: string } };
+                return parsedContent?.meta?.description || "No description available";
+            } catch {
                 return "No description available";
             }
         };
 
-        const getSourceUrl = (content: any) => {
+        const getSourceUrl = (content: unknown) => {
             try {
-                return content?.meta?.source_url;
-            } catch (error) {
+                const parsedContent = content as { meta?: { source_url?: string } };
+                return parsedContent?.meta?.source_url;
+            } catch {
                 return null;
             }
         };
 
-        const getHostname = (url: string) => {
+        const getHostname = (url: string | null | undefined) => {
+            if (!url) return "";
             try {
                 return new URL(url).hostname;
-            } catch (error) {
+            } catch {
                 return url;
             }
         };
@@ -101,7 +104,7 @@ export default async function Page() {
                             {capsules.length} capsule{capsules.length === 1 ? '' : 's'} found
                         </Typography>
                         <Grid container spacing={3}>
-                            {capsules.map((capsule: Capsule) => (
+                            {capsules.map((capsule: CapsuleWithProgress) => (
                                 <Grid size={{ xs: 12, sm: 6, md: 12 }} key={capsule.id}>
                                     <Card 
                                         variant="outlined" 
@@ -151,9 +154,24 @@ export default async function Page() {
                                                         variant="outlined"
                                                     />
                                                 )}
-                                                {capsule.created_at && (
+                                                {capsule.overall_progress !== null && capsule.overall_progress !== undefined && (
                                                     <Chip 
-                                                        label={formatDate(capsule.created_at)} 
+                                                        label={`${Math.round(capsule.overall_progress)}% complete`} 
+                                                        size="small" 
+                                                        variant="outlined"
+                                                        color={capsule.overall_progress > 90 ? "success" : capsule.overall_progress > 50 ? "primary" : "default"}
+                                                    />
+                                                )}
+                                                {capsule.last_accessed ? (
+                                                    <Chip 
+                                                        label={`Last read ${formatDate(capsule.last_accessed)}`} 
+                                                        size="small" 
+                                                        variant="outlined"
+                                                        color="secondary"
+                                                    />
+                                                ) : capsule.created_at && (
+                                                    <Chip 
+                                                        label={`Created ${formatDate(capsule.created_at)}`} 
                                                         size="small" 
                                                         variant="outlined"
                                                     />
@@ -183,7 +201,7 @@ export default async function Page() {
                                                 component={Link}
                                                 href={`/dashboard/capsule/${capsule.id}/learn`}
                                             >
-                                                Continue Reading
+                                                {capsule.last_accessed ? 'Continue Reading' : 'Start Reading'}
                                             </Button>
                                             <IconButton>
                                                 <Share />

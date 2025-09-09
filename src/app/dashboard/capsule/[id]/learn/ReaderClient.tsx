@@ -10,6 +10,7 @@ import {
     getSavedProgress,
     setSavedProgress,
     saveProgressToDatabase,
+    updateLastAccessed,
 } from "@/lib/client/capsuleProgress";
 
 // CapsuleClient type imported from shared types
@@ -40,6 +41,11 @@ export default function ReaderClient({ capsule }: { capsule: CapsuleClient }) {
     const [progress, setProgress] = React.useState<number>(
         computeProgress(Math.max(saved?.last_page_read || 0, page), totalPages)
     );
+
+    // Update last accessed timestamp when component mounts
+    React.useEffect(() => {
+        updateLastAccessed(capsule.id);
+    }, [capsule.id]);
 
     // Sync URL when page changes
     React.useEffect(() => {

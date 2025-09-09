@@ -217,6 +217,45 @@ export const getUserCapsules = cache(async (userId: string) => {
     }
 });
 
+export const getUserCapsulesWithProgress = cache(async (userId: string) => {
+    /**
+     * Fetch all capsules created by a specific user with their progress information,
+     * sorted by last accessed date (newest first), then by creation date.
+     *
+     * Parameters:
+     * - userId: string - the ID of the user whose capsules to fetch
+     *
+     * Returns:
+     * - Array of capsule objects with progress information
+     * - Empty array if no capsules found or on error
+     */
+    console.log("Fetching capsules with progress for userId:", userId);
+    try {
+        const capsules = await sql`
+            SELECT 
+                c.id, 
+                c.title, 
+                c.total_pages, 
+                c.created_at, 
+                c.content,
+                uc.last_page_read,
+                uc.overall_progress,
+                uc.bookmarked_date,
+                uc.last_accessed
+            FROM capsules c
+            LEFT JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId}
+            WHERE c.created_by = ${userId}
+            ORDER BY uc.last_accessed DESC NULLS LAST, c.created_at DESC
+        `;
+
+        console.log(`Fetched ${capsules.length} capsules with progress for userId:`, userId);
+        return capsules;
+    } catch (error) {
+        console.log("Failed to fetch user capsules with progress", error);
+        return [];
+    }
+});
+
 export const getCapsule = cache(async (capsuleId: string) => {
     /**
      * Fetch a specific capsule by ID.
@@ -253,7 +292,7 @@ export const getUserCapsule = cache(async (userId: string, capsuleId: string) =>
      */
     try {
         const userCapsules = await sql`
-            SELECT id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date
+            SELECT id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date, last_accessed
             FROM user_capsules 
             WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
         `;
@@ -270,6 +309,7 @@ export const upsertUserCapsule = async (params: {
     lastPageRead?: number | null;
     overallProgress?: number | null;
     bookmarkedDate?: string | null;
+    lastAccessed?: string | null;
 }) => {
     /**
      * Insert or update user's progress for a capsule.
@@ -280,22 +320,25 @@ export const upsertUserCapsule = async (params: {
      * - lastPageRead: number | null - the last page the user read
      * - overallProgress: number | null - the overall progress percentage
      * - bookmarkedDate: string | null - ISO timestamp when bookmarked
+     * - lastAccessed: string | null - ISO timestamp when last accessed
      *
      * Returns:
      * - The user capsule ID (existing or newly created)
      */
     try {
-        const { userId, capsuleId, lastPageRead, overallProgress, bookmarkedDate } = params;
+        const { userId, capsuleId, lastPageRead, overallProgress, bookmarkedDate, lastAccessed } = params;
 
         // Detect which optional fields were explicitly provided by the caller.
         const providedLastPage = Object.prototype.hasOwnProperty.call(params, "lastPageRead");
         const providedProgress = Object.prototype.hasOwnProperty.call(params, "overallProgress");
         const providedBookmarked = Object.prototype.hasOwnProperty.call(params, "bookmarkedDate");
+        const providedLastAccessed = Object.prototype.hasOwnProperty.call(params, "lastAccessed");
 
     // Normalize provided values to concrete types for the postgres template types.
     const lastPageVal: number | null = providedLastPage ? (lastPageRead ?? null) : null;
     const progressVal: number | null = providedProgress ? (overallProgress ?? null) : null;
     const bookmarkedVal: string | null = providedBookmarked ? (bookmarkedDate ?? null) : null;
+    const lastAccessedVal: string | null = providedLastAccessed ? (lastAccessed ?? null) : null;
 
     // Check if a row already exists for this user+capsule.
         const existing = await sql`
@@ -330,6 +373,14 @@ export const upsertUserCapsule = async (params: {
                 `;
             }
 
+            if (providedLastAccessed) {
+                await sql`
+                    UPDATE user_capsules
+                    SET last_accessed = ${lastAccessedVal}
+                    WHERE user_id = ${userId} AND capsule_id = ${capsuleId}
+                `;
+            }
+
             return existingId;
         }
 
@@ -338,10 +389,11 @@ export const upsertUserCapsule = async (params: {
         const lastPage = lastPageVal;
         const progress = progressVal;
         const bookmarked = bookmarkedVal;
+        const lastAccessedInsert = lastAccessedVal;
 
         await sql`
-            INSERT INTO user_capsules (id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date)
-            VALUES (${id}, ${userId}, ${capsuleId}, ${lastPage}, ${progress}, ${bookmarked})
+            INSERT INTO user_capsules (id, user_id, capsule_id, last_page_read, overall_progress, bookmarked_date, last_accessed)
+            VALUES (${id}, ${userId}, ${capsuleId}, ${lastPage}, ${progress}, ${bookmarked}, ${lastAccessedInsert})
         `;
 
         return id;

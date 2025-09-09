@@ -39,10 +39,31 @@ export async function saveProgressToDatabase(
     await fetch("/api/capsule/progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ capsuleId, lastPageRead, overallProgress }),
+      body: JSON.stringify({ 
+        capsuleId, 
+        lastPageRead, 
+        overallProgress,
+        lastAccessed: new Date().toISOString()
+      }),
     });
   } catch (error) {
     // Best-effort only; server is source of truth eventually
     console.warn("Failed to save progress to database:", error);
+  }
+}
+
+export async function updateLastAccessed(capsuleId: string) {
+  try {
+    await fetch("/api/capsule/progress", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        capsuleId,
+        lastAccessed: new Date().toISOString()
+      }),
+    });
+  } catch (error) {
+    // Best-effort only; server is source of truth eventually
+    console.warn("Failed to update last accessed time:", error);
   }
 }

@@ -40,4 +40,12 @@ export type UserCapsule = {
     last_page_read?: number | null;
     overall_progress?: number | null; // double precision in DB
     bookmarked_date?: string | null; // ISO timestamp
+    last_accessed?: string | null; // ISO timestamp
+};
+
+export type CapsuleWithProgress = Capsule & {
+    last_page_read?: number | null;
+    overall_progress?: number | null;
+    bookmarked_date?: string | null;
+    last_accessed?: string | null;
 };

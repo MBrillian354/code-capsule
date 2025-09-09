@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
             lastPageRead: validatedData.lastPageRead ?? null,
             overallProgress: validatedData.overallProgress ?? null,
             bookmarkedDate: validatedData.bookmarkedDate ?? null,
+            lastAccessed: validatedData.lastAccessed ?? null,
         });
 
         return NextResponse.json({ success: true });

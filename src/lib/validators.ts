@@ -66,6 +66,7 @@ export const UpdateProgressSchema = z.object({
     lastPageRead: z.number().int().min(1).optional(),
     overallProgress: z.number().min(0).max(100).optional(),
     bookmarkedDate: z.string().optional().nullable(),
+    lastAccessed: z.string().optional().nullable(),
 });
 export type UpdateProgressInput = z.infer<typeof UpdateProgressSchema>;
 
