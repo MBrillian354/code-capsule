@@ -38,3 +38,25 @@ export const CapsuleSchema = z.object({
 export type CapsuleValidated = z.infer<typeof CapsuleSchema>;
 
 export const CreateByUrlSchema = z.object({ url: z.string().url() });
+
+// Shared progress update schema/types for capsule creation workflows (client/server)
+export const ProgressStepEnum = z.enum([
+    'fetching',
+    'extracting',
+    'chunking',
+    'generating',
+    'finalizing',
+    'completed',
+    'failed',
+]);
+
+export const ProgressUpdateSchema = z.object({
+    step: ProgressStepEnum,
+    message: z.string(),
+    error: z.string().optional(),
+    capsuleId: z.string().optional(),
+});
+
+export type ProgressStep = z.infer<typeof ProgressStepEnum>;
+export type ProgressUpdate = z.infer<typeof ProgressUpdateSchema>;
+

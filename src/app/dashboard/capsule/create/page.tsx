@@ -11,7 +11,8 @@ import {
     CircularProgress,
 } from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation";
-import type { CreateCapsuleApiResult, ProgressUpdate } from "@/types/capsule";
+import type { CreateCapsuleApiResult } from "@/types/capsule";
+import type { ProgressUpdate } from "@/lib/validators";
 
 type ProgressState = {
     step:

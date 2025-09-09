@@ -9,17 +9,14 @@ import {
     summarizeChunkForLLM,
 } from "@/lib/extract";
 import { generateCapsuleWithDeepseek } from "@/lib/ai/deepseek";
-import { CapsuleSchema } from "@/lib/validators";
+import { CapsuleSchema, ProgressUpdate } from "@/lib/validators";
 import { insertCapsule } from "@/lib/dal";
 
 export type CreateCapsuleResult =
     | { id: string; ok: true }
     | { ok: false; error: string };
 
-export type ProgressCallback = (update: {
-    step: 'fetching' | 'extracting' | 'chunking' | 'generating' | 'finalizing';
-    message: string;
-}) => void;
+export type ProgressCallback = (update: ProgressUpdate) => void;
 
 export async function createCapsuleFromUrl(
     url: string,

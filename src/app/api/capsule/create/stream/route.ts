@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createCapsuleFromUrl } from '@/lib/capsules'
 import { CreateByUrlSchema } from '@/lib/validators'
-
-// SSE helper
-function sseFormat(event: string, data: unknown) {
-  return `event: ${event}\n` + `data: ${JSON.stringify(data)}\n\n`
-}
+import { sseFormat } from '@/lib/sse'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)

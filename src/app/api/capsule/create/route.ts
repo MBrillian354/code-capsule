@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result)
   } catch (err) {
-    console.error("[Create capsule by URL] Error parsing request:", err);
+    console.error("[Create capsule by URL] Error:", err);
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
   }
 }
