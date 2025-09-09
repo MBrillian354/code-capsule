@@ -16,8 +16,14 @@ export type CreateCapsuleResult =
     | { id: string; ok: true }
     | { ok: false; error: string };
 
+export type ProgressCallback = (update: {
+    step: 'fetching' | 'extracting' | 'chunking' | 'generating' | 'finalizing';
+    message: string;
+}) => void;
+
 export async function createCapsuleFromUrl(
-    url: string
+    url: string,
+    onProgress?: ProgressCallback
 ): Promise<CreateCapsuleResult> {
     if (!isValidHttpUrl(url)) return { ok: false, error: "Invalid URL" };
 
@@ -33,6 +39,11 @@ export async function createCapsuleFromUrl(
         return { ok: false, error: "Unauthorized" };
     }
 
+    onProgress?.({
+        step: 'fetching',
+        message: 'Fetching content from URL...'
+    });
+
     let html: string;
     try {
         html = await fetchHtml(url);
@@ -40,13 +51,29 @@ export async function createCapsuleFromUrl(
         return { ok: false, error: "Failed to fetch URL" };
     }
 
+    onProgress?.({
+        step: 'extracting',
+        message: 'Extracting main content...'
+    });
+
     const extracted = extractMainContent(url, html);
     const markdown = htmlToMarkdown(extracted.contentHtml);
+    
+    onProgress?.({
+        step: 'chunking',
+        message: 'Processing content...'
+    });
+    
     const chunks = chunkMarkdown(markdown);
     const chunkSummaries = chunks.map((c) => ({
         index: c.index,
         text: summarizeChunkForLLM(c.markdown),
     }));
+
+    onProgress?.({
+        step: 'generating',
+        message: 'Generating capsule with AI...'
+    });
 
     let generated;
     try {
@@ -63,6 +90,11 @@ export async function createCapsuleFromUrl(
     if (!parsed.success) {
         return { ok: false, error: "Generated content invalid" };
     }
+
+    onProgress?.({
+        step: 'finalizing',
+        message: 'Saving capsule...'
+    });
 
     const pages = parsed.data.pages.map((p, i) => ({ ...p, page: i + 1 }));
 
