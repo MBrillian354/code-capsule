@@ -14,7 +14,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
-import { authenticate } from "@/lib/actions";
+import { authenticate } from "@/app/login/actions";
 
 export default function Page() {
     const searchParams = useSearchParams();

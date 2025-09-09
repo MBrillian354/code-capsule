@@ -2,7 +2,7 @@
 
 // No direct DB access here; this file only wires form actions to auth
 
-import { signIn } from "../../auth";
+import { signIn } from "../../../auth";
 import { AuthError } from "next-auth";
 
 export async function authenticate(
