@@ -34,7 +34,7 @@ export async function generateCapsuleWithDeepseek(input: {
   const system = `You are a senior technical editor who transforms articles into structured learning capsules.
 - Produce concise, accurate, well-formatted Markdown.
 - Keep code fences and lists where appropriate.
-- Avoid hallucination; if content is missing, omit it.
+- Be informative while avoiding hallucination; if content is missing, omit it.
 - Use neutral tone.
 `
 
@@ -66,6 +66,10 @@ export async function generateCapsuleWithDeepseek(input: {
     ],
     temperature: 0.3,
     response_format: { type: 'json_object' },
+    max_tokens: 8096,
+    frequency_penalty: -1.5,
+    presence_penalty: -1.0,
+    
   })
 
   const content = resp.choices?.[0]?.message?.content || '{}'
