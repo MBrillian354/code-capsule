@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { TextField, Button, Box, Typography, Paper } from "@mui/material";
+import {
+    TextField,
+    Button,
+    Box,
+    Typography,
+    Paper,
+    Stack,
+} from "@mui/material";
 
 export default function Page() {
     const [email, setEmail] = useState("");
@@ -17,10 +24,28 @@ export default function Page() {
     return (
         <Box className="min-h-screen flex items-center justify-center bg-gray-50">
             <Paper elevation={3} className="p-8 w-full max-w-md">
-                <Typography variant="h4" component="h1" gutterBottom align="center">
+                <Typography
+                    variant="h4"
+                    component="h1"
+                    gutterBottom
+                    align="center"
+                    className="mb-6 font-bold text-primary"
+                >
+                    CodeCapsule
+                </Typography>
+                <Typography
+                    variant="h4"
+                    component="h2"
+                    gutterBottom
+                    align="center"
+                >
                     Login
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} className="space-y-4">
+                <Stack
+                    component="form"
+                    onSubmit={handleSubmit}
+                    className="gap-4"
+                >
                     <TextField
                         fullWidth
                         label="Email"
@@ -48,7 +73,7 @@ export default function Page() {
                     >
                         Login
                     </Button>
-                </Box>
+                </Stack>
             </Paper>
         </Box>
     );
