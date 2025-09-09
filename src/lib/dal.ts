@@ -57,3 +57,17 @@ export const getUserByEmail = cache(async (email: string) => {
     return null
   }
 })
+
+export const createUser = async (name: string, email: string, hashedPassword: string) => {
+  try {
+    const userId = crypto.randomUUID()
+    await sql`
+      INSERT INTO users (id, name, email, password)
+      VALUES (${userId}, ${name}, ${email}, ${hashedPassword})
+    `
+    return userId
+  } catch (error) {
+    console.log('Failed to create user')
+    throw new Error('Failed to create user')
+  }
+}

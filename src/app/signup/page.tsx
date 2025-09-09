@@ -14,14 +14,11 @@ import {
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import { useActionState } from "react";
-import { useSearchParams } from "next/navigation";
-import { authenticate } from "@/app/login/actions";
+import { createAccount } from "@/app/signup/actions";
 
 export default function Page() {
-    const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
     const [errorMessage, formAction, isPending] = useActionState(
-        authenticate,
+        createAccount,
         undefined
     );
 
@@ -47,7 +44,7 @@ export default function Page() {
                     align="center"
                     sx={{ fontWeight: "bold", marginBottom: 4 }}
                 >
-                    Login
+                    Create Account
                 </Typography>
                 <Suspense fallback={<div>Loading...</div>}>
                     <Stack
@@ -57,12 +54,23 @@ export default function Page() {
                     >
                         <TextField
                             fullWidth
+                            id="name"
+                            name="name"
+                            label="Full Name"
+                            type="text"
+                            required
+                            variant="outlined"
+                            disabled={isPending}
+                        />
+                        <TextField
+                            fullWidth
                             id="email"
                             name="email"
                             label="Email"
                             type="email"
                             required
                             variant="outlined"
+                            disabled={isPending}
                         />
                         <TextField
                             fullWidth
@@ -72,15 +80,27 @@ export default function Page() {
                             type="password"
                             required
                             variant="outlined"
+                            disabled={isPending}
+                            helperText="Must be at least 8 characters with uppercase, lowercase, and number"
+                        />
+                        <TextField
+                            fullWidth
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            type="password"
+                            required
+                            variant="outlined"
+                            disabled={isPending}
                         />
                         <Button
                             fullWidth
                             type="submit"
                             variant="contained"
                             color="primary"
-                            aria-disabled={isPending}
+                            disabled={isPending}
                         >
-                            Login
+                            {isPending ? "Creating Account..." : "Create Account"}
                         </Button>
                         {errorMessage && (
                             <div
@@ -95,9 +115,9 @@ export default function Page() {
                             </div>
                         )}
                         <Typography variant="body2" align="center" className="mt-4">
-                            Don't have an account?{" "}
-                            <Link href="/signup" className="text-blue-600 hover:underline">
-                                Create one here
+                            Already have an account?{" "}
+                            <Link href="/login" className="text-blue-600 hover:underline">
+                                Sign in here
                             </Link>
                         </Typography>
                     </Stack>
