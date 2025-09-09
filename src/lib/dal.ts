@@ -5,6 +5,7 @@ import { decrypt } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import postgres from 'postgres'
 import type { User } from '@/lib/definitions'
+import { z } from 'zod'
 
 /**
  * Data Access Layer (DAL)
@@ -153,4 +154,28 @@ export const createUser = async (name: string, email: string, hashedPassword: st
     console.log('Failed to create user')
     throw new Error('Failed to create user')
   }
+}
+
+// Capsule persistence
+const CapsuleDbSchema = z.object({
+  title: z.string(),
+  total_pages: z.number().int().nonnegative(),
+  content: z.any(),
+  created_by: z.string().uuid(),
+})
+
+export async function insertCapsule(params: {
+  title: string
+  total_pages: number
+  content: unknown
+  created_by: string
+}): Promise<{ id: string }>
+{
+  const parsed = CapsuleDbSchema.parse(params)
+  const id = crypto.randomUUID()
+  await sql`
+    INSERT INTO capsules (id, title, total_pages, content, created_by)
+    VALUES (${id}, ${parsed.title}, ${parsed.total_pages}, ${sql.json(parsed.content)}, ${parsed.created_by})
+  `
+  return { id }
 }

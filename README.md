@@ -34,3 +34,26 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Environment variables
+
+Create a `.env.local` file with:
+
+```
+POSTGRES_URL=postgresql://...
+DEEPSEEK_API_KEY=sk-...
+# Optional: override base URL for DeepSeek
+# DEEPSEEK_BASE_URL=https://api.deepseek.com
+
+# Needed so server action can call internal API during dev
+NEXT_PUBLIC_BASE_URL=http://localhost:3000
+```
+
+## Capsule creation pipeline
+
+POST `/api/capsule/create` with body `{ url: string }` will:
+- validate URL, fetch & extract main content
+- convert to Markdown and chunk
+- call DeepSeek to generate a Capsule (title, description, pages)
+- validate shape and persist to `capsules`
+- return `{ ok: true, id }` on success

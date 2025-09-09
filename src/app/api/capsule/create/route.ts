@@ -1,12 +1,21 @@
 import { NextResponse } from "next/server";
+import { createCapsuleFromUrl } from "@/lib/capsules";
+import { CreateByUrlSchema } from "@/lib/validators";
 
 export async function POST(request: Request) {
   try {
-    const { url } = await request.json();
-    // Log the URL received from the frontend
-    console.log("[Create capsule by URL] URL received:", url);
+    const body = await request.json();
+    const parsed = CreateByUrlSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 })
+    }
 
-    return NextResponse.json({ ok: true });
+    const result = await createCapsuleFromUrl(parsed.data.url)
+    if (!('ok' in result) || result.ok !== true) {
+      return NextResponse.json(result, { status: 400 })
+    }
+
+    return NextResponse.json(result)
   } catch (err) {
     console.error("[Create capsule by URL] Error parsing request:", err);
     return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
