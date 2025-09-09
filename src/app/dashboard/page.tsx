@@ -13,6 +13,10 @@ import {
     Divider,
 } from "@mui/material";
 import { Search as SearchIcon } from "@mui/icons-material";
+import {
+    continueLearningSample,
+    recentlySavedSamples,
+} from "./placeholder-data";
 
 export default function Page() {
     return (
@@ -28,12 +32,9 @@ export default function Page() {
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Box>
                         <Typography gutterBottom variant="h5">
-                            Continue Reading
+                            Continue Learning
                         </Typography>
-                        <Card
-                            variant="outlined"
-                            sx={{ "!important": { paddingBottom: 0 } }}
-                        >
+                        <Card variant="outlined">
                             <CardContent
                                 sx={{
                                     display: "flex",
@@ -43,15 +44,14 @@ export default function Page() {
                                 }}
                             >
                                 <Typography variant="h6">
-                                    Intro to Typescript
+                                    {continueLearningSample.title}
                                 </Typography>
                                 <Typography
                                     variant="body2"
                                     color="text.secondary"
                                     sx={{ mt: 1 }}
                                 >
-                                    A concise guide to get you started with
-                                    TypeScript — types, interfaces, and tooling.
+                                    {continueLearningSample.description}
                                 </Typography>
 
                                 {/* progress area pushed to the bottom */}
@@ -66,12 +66,17 @@ export default function Page() {
                                             variant="caption"
                                             color="text.secondary"
                                         >
-                                            45% completed
+                                            {
+                                                continueLearningSample.overall_progress
+                                            }
+                                            % completed
                                         </Typography>
                                     </Box>
                                     <LinearProgress
                                         variant="determinate"
-                                        value={45}
+                                        value={
+                                            continueLearningSample.overall_progress
+                                        }
                                     />
                                 </Box>
                             </CardContent>
@@ -92,13 +97,24 @@ export default function Page() {
                                     gap: 1,
                                 }}
                             >
-                                <Typography variant="h6">
-                                    Access your saved resources quickly.
-                                </Typography>
-                                <Divider />
-                                <Typography variant="h6">
-                                    Access your saved resources quickly.
-                                </Typography>
+                                {recentlySavedSamples.map((resource, index) => (
+                                    <Box key={resource.id}>
+                                        <Typography variant="h6">
+                                            {resource.title}
+                                        </Typography>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{ mb: 1 }}
+                                        >
+                                            {resource.description}
+                                        </Typography>
+                                        {index <
+                                            recentlySavedSamples.length - 1 && (
+                                            <Divider />
+                                        )}
+                                    </Box>
+                                ))}
                             </CardContent>
                         </Card>
                     </Box>
