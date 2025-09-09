@@ -72,11 +72,6 @@ export default function Page() {
                             required
                             variant="outlined"
                         />
-                        <input
-                            type="hidden"
-                            name="redirectTo"
-                            value={callbackUrl}
-                        />
                         <Button
                             fullWidth
                             type="submit"
@@ -86,20 +81,18 @@ export default function Page() {
                         >
                             Login
                         </Button>
-                        <div
-                            className="flex h-8 items-end space-x-1"
-                            aria-live="polite"
-                            aria-atomic="true"
-                        >
-                            {errorMessage && (
-                                <>
-                                    <ErrorOutlineIcon className="text-red-500" />
-                                    <p className="text-sm text-red-500">
-                                        {errorMessage}
-                                    </p>
-                                </>
-                            )}
-                        </div>
+                        {errorMessage && (
+                            <div
+                                className="flex h-8 items-end space-x-1"
+                                aria-live="polite"
+                                aria-atomic="true"
+                            >
+                                <ErrorOutlineIcon className="text-red-500" />
+                                <p className="text-sm text-red-500">
+                                    {errorMessage}
+                                </p>
+                            </div>
+                        )}
                     </Stack>
                 </Suspense>
             </Paper>
