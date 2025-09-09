@@ -3,11 +3,14 @@
 import React, { useState } from "react";
 import { Box } from "@mui/material";
 import Nav from "../ui/dashboard/nav";
+import type { User } from "@/lib/definitions";
 
 export default function DashboardClient({
     children,
+    user,
 }: {
     children: React.ReactNode;
+    user: User | null;
 }) {
     const [open, setOpen] = useState(false);
 
@@ -17,7 +20,7 @@ export default function DashboardClient({
 
     return (
         <Box sx={{ display: "flex" }}>
-            <Nav open={open} onToggle={handleDrawerToggle} />
+            <Nav open={open} onToggle={handleDrawerToggle} user={user} />
             <Box
                 component="main"
                 sx={{

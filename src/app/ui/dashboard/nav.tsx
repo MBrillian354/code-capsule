@@ -27,6 +27,7 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/login/actions";
+import type { User } from "@/lib/definitions";
 
 const navItems = [
     { href: "/dashboard", icon: DashboardIcon, primary: "Dashboard" },
@@ -40,9 +41,11 @@ export const drawerWidthClosed = 60;
 export default function Nav({
     open,
     onToggle,
+    user,
 }: {
     open: boolean;
     onToggle: () => void;
+    user: User | null;
 }) {
     const pathname = usePathname();
 
@@ -175,6 +178,8 @@ export default function Nav({
                             overflow: "visible",
                             filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
                             mt: 1.5,
+                            minHeight: 150,
+                            minWidth: 200,
                             "& .MuiAvatar-root": {
                                 width: 32,
                                 height: 32,
@@ -204,7 +209,7 @@ export default function Nav({
                     className="flex items-center gap-2"
                 >
                     <Avatar sx={{ bgcolor: "secondary.main" }} />
-                    <Typography>User Name</Typography>
+                    <Typography>{user?.name || "User"}</Typography>
                 </MenuItem>
                 <Divider />
                 <MenuItem
