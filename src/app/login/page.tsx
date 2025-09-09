@@ -95,7 +95,7 @@ export default function Page() {
                             </div>
                         )}
                         <Typography variant="body2" align="center" className="mt-4">
-                            Don't have an account?{" "}
+                            Don&apos;t have an account?{" "}
                             <Link href="/signup" className="text-blue-600 hover:underline">
                                 Create one here
                             </Link>
