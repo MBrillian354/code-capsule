@@ -19,7 +19,7 @@ export default function DashboardClient({
     };
 
     return (
-        <Box sx={{ display: "flex" }}>
+        <Box sx={{ display: "flex" }} className="max-w-6xl mx-auto">
             <Nav open={open} onToggle={handleDrawerToggle} user={user} />
             <Box
                 component="main"
