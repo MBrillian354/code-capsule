@@ -79,8 +79,9 @@ export default function Page() {
                             variant="contained"
                             color="primary"
                             aria-disabled={isPending}
+                            disabled={isPending}
                         >
-                            Login
+                            {isPending ? "Logging in..." : "Login"}
                         </Button>
                         {errorMessage && (
                             <div
@@ -94,9 +95,16 @@ export default function Page() {
                                 </p>
                             </div>
                         )}
-                        <Typography variant="body2" align="center" className="mt-4">
+                        <Typography
+                            variant="body2"
+                            align="center"
+                            className="mt-4"
+                        >
                             Don&apos;t have an account?{" "}
-                            <Link href="/signup" className="text-blue-600 hover:underline">
+                            <Link
+                                href="/signup"
+                                className="text-blue-600 hover:underline"
+                            >
                                 Create one here
                             </Link>
                         </Typography>

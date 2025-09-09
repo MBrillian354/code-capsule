@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import {
     Box,
     Grid,
@@ -11,14 +11,23 @@ import {
     InputAdornment,
     LinearProgress,
     Divider,
+    Button,
+    Stack,
 } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import {
     continueLearningSample,
     recentlySavedSamples,
 } from "./placeholder-data";
+import { useActionState } from "react";
+import { createCapsule } from "./actions";
 
 export default function Page() {
+    const [errorMessage, formAction, isPending] = useActionState(
+        createCapsule,
+        undefined
+    );
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <Typography
@@ -120,21 +129,42 @@ export default function Page() {
                     </Box>
                 </Grid>
                 <Grid size={12}>
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        sx={{ backgroundColor: "white" }}
-                        placeholder="Enter URL to convert into a capsule..."
-                        slotProps={{
-                            input: {
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <CodeIcon />
-                                    </InputAdornment>
-                                ),
-                            },
-                        }}
-                    />
+                    <Suspense>
+                        <Stack
+                            component="form"
+                            action={formAction}
+                            direction="row"
+                            spacing={1}
+                        >
+                            <TextField
+                                name="url"
+                                fullWidth
+                                variant="outlined"
+                                sx={{ backgroundColor: "white", flex: 1 }}
+                                placeholder="Enter URL to convert into a capsule..."
+                                disabled={isPending}
+                                InputProps={{
+                                    startAdornment: (
+                                        <InputAdornment position="start">
+                                            <CodeIcon />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                            />
+                            <Button
+                                variant="contained"
+                                type="submit"
+                                disabled={isPending}
+                            >
+                                {isPending ? "Creating..." : "Create"}
+                            </Button>
+                        </Stack>
+                    </Suspense>
+                    {errorMessage && (
+                        <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                            {errorMessage}
+                        </Typography>
+                    )}
                 </Grid>
             </Grid>
         </Box>
