@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { CreateCapsuleApiResult } from "@/types/capsule";
-import type { ProgressUpdate } from "@/lib/validators";
+import type { ProgressUpdate, ProgressStep } from "@/lib/validators";
+import { stepMessages, stepProgress, stepOrder } from "@/lib/progress-ui";
 
 type ProgressState = {
     step:
@@ -29,25 +30,7 @@ type ProgressState = {
     capsuleId?: string;
 };
 
-const stepMessages = {
-    fetching: "Fetching content from URL...",
-    extracting: "Extracting main content...",
-    chunking: "Processing content...",
-    generating: "Generating capsule with AI...",
-    finalizing: "Saving capsule...",
-    completed: "Capsule created successfully!",
-    failed: "Failed to create capsule",
-};
-
-const stepProgress = {
-    fetching: 20,
-    extracting: 40,
-    chunking: 60,
-    generating: 80,
-    finalizing: 95,
-    completed: 100,
-    failed: 0,
-};
+// messages, order, and progress mapping are imported from shared constants
 
 // Avoid importing server-only modules in client; call API route instead
 async function createCapsuleViaApi(
@@ -174,7 +157,7 @@ export default function CreateCapsulePage() {
     const [isProcessing, setIsProcessing] = useState(true);
     const hasStarted = useRef(false);
 
-    const steps = [
+    const steps: { key: ProgressStep; label: string; icon: string }[] = [
         { key: "fetching", label: "Fetching content from URL...", icon: "🌐" },
         { key: "extracting", label: "Extracting main content...", icon: "📄" },
         { key: "chunking", label: "Processing content...", icon: "⚙️" },
@@ -192,15 +175,7 @@ export default function CreateCapsulePage() {
         { key: "failed", label: "Failed to create capsule", icon: "❌" },
     ];
 
-    const stepOrder = [
-        "fetching",
-        "extracting",
-        "chunking",
-        "generating",
-        "finalizing",
-        "completed",
-        "failed",
-    ];
+    // stepOrder imported from shared constants
 
     useEffect(() => {
         // Warn user if they try to leave during processing

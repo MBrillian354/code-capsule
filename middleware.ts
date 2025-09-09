@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { decrypt } from '@/lib/session'
-
-// Define route patterns
-const protectedRoutes = ['/dashboard']
-const publicRoutes = ['/login', '/signup', '/']
+import { isProtectedPath, isPublicPath } from '@/lib/routes'
 
 export default async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname
-  const isProtectedRoute = protectedRoutes.some(route => path.startsWith(route))
-  const isPublicRoute = publicRoutes.includes(path)
+  const isProtectedRoute = isProtectedPath(path)
+  const isPublicRoute = isPublicPath(path)
 
   // Decrypt the session from the cookie
   const cookie = req.cookies.get('session')?.value

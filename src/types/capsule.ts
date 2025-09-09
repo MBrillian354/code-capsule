@@ -5,3 +5,16 @@ export type CreateCapsuleApiResult =
   | { ok: false; error: string }
 
 export type { ProgressUpdate } from '@/lib/validators'
+
+// Client-facing capsule shape used by the reader UI
+export type CapsulePageClient = { page: number; page_title?: string; body: string }
+
+export type CapsuleClient = {
+  id: string
+  title: string
+  description: string
+  content: CapsulePageClient[]
+  last_page_read?: number
+  overall_progress?: number
+  bookmarked_date?: string
+}

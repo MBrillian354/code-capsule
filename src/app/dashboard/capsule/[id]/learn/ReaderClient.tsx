@@ -4,6 +4,7 @@ import React from "react";
 import { Box, Button, Card, LinearProgress, Typography } from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { marked } from "marked";
+import type { CapsuleClient } from "@/types/capsule";
 import {
     computeProgress,
     getSavedProgress,
@@ -11,16 +12,7 @@ import {
     saveProgressToDatabase,
 } from "@/lib/client/capsuleProgress";
 
-type CapsulePage = { page: number; page_title?: string; body: string };
-
-export type CapsuleClient = {
-    id: string;
-    title: string;
-    description: string;
-    content: CapsulePage[];
-    last_page_read?: number;
-    overall_progress?: number;
-};
+// CapsuleClient type imported from shared types
 
 function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
