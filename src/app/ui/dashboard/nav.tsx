@@ -23,7 +23,7 @@ import {
     Search as SearchIcon,
     Bookmark as BookmarkIcon,
     Menu as MenuIcon,
-    Logout,
+    Logout, ViewAgendaOutlined
 } from "@mui/icons-material";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Link from "next/link";
@@ -34,7 +34,7 @@ import type { User } from "@/lib/definitions";
 const navItems = [
     { href: "/dashboard", icon: DashboardIcon, primary: "Dashboard" },
     { href: "/dashboard/explore", icon: SearchIcon, primary: "Explore" },
-    { href: "/dashboard/bookmarks", icon: BookmarkIcon, primary: "Saved" },
+    { href: "/dashboard/capsules/me", icon: ViewAgendaOutlined, primary: "My Capsules" },
 ];
 
 export const drawerWidthOpen = 240;
@@ -69,7 +69,7 @@ export default function Nav({
         <Box className="py-20">
             <List>
                 {navItems.map((item, index) => (
-                    <ListItem onClick={onToggle} key={index} disablePadding>
+                    <ListItem onClick={handleClose} key={index} disablePadding>
                         <Link href={item.href} className="w-full">
                             <ListItemButton
                                 sx={{

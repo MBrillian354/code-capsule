@@ -17,7 +17,7 @@ import {
 import CodeIcon from "@mui/icons-material/Code";
 import {
     continueLearningSample,
-    recentlySavedSamples,
+    recentlySavedSamples as recentlyCreatedSamples,
 } from "./placeholder-data";
 import { useActionState } from "react";
 import { createCapsule } from "./actions";
@@ -95,7 +95,7 @@ export default function Page() {
                 <Grid size={{ xs: 12, md: 6 }}>
                     <Box>
                         <Typography gutterBottom variant="h5">
-                            Recently Saved
+                            Recently Created
                         </Typography>
                         <Card variant="outlined">
                             <CardContent
@@ -106,7 +106,7 @@ export default function Page() {
                                     gap: 1,
                                 }}
                             >
-                                {recentlySavedSamples.map((resource, index) => (
+                                {recentlyCreatedSamples.map((resource, index) => (
                                     <Box key={resource.id}>
                                         <Typography variant="h6">
                                             {resource.title}
@@ -119,7 +119,7 @@ export default function Page() {
                                             {resource.description}
                                         </Typography>
                                         {index <
-                                            recentlySavedSamples.length - 1 && (
+                                            recentlyCreatedSamples.length - 1 && (
                                             <Divider />
                                         )}
                                     </Box>
