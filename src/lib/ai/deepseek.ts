@@ -89,13 +89,14 @@ export async function generateCapsuleWithDeepseek(input: {
             response_format: { type: "json_object" },
         });
     } catch (e: unknown) {
-        const err = e as any;
+        // Narrow the unknown to a typed shape instead of `any` so eslint is happy
+        const err = e as Error & { status?: number; code?: string; data?: unknown };
         console.error("generateCapsuleWithDeepseek: API error", {
-            name: err?.name,
-            message: err?.message,
-            status: err?.status,
-            code: err?.code,
-            data: err?.data,
+            name: (err as Error)?.name,
+            message: (err as Error)?.message,
+            status: err.status,
+            code: err.code,
+            data: err.data,
         });
         throw err;
     }
