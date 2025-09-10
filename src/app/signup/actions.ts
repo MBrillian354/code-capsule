@@ -2,7 +2,7 @@
 
 import { SignupSchema } from '@/lib/validators';
 import bcrypt from 'bcryptjs'
-import { createSession } from '@/lib/session'
+import { createSession } from '@server/auth/session'
 import { getUserByEmail, createUser } from '@server/queries'
 import { redirect } from 'next/navigation'
 

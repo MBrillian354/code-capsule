@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { decrypt } from '@/lib/session'
+import { decrypt } from '@server/auth/session'
 import { isProtectedPath, isPublicPath } from '@/lib/routes'
 
 export default async function middleware(req: NextRequest) {

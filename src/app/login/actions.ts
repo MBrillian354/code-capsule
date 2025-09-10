@@ -2,7 +2,7 @@
 
 import { LoginSchema } from '@/lib/validators';
 import bcrypt from 'bcryptjs'
-import { createSession } from '@/lib/session'
+import { createSession } from '@server/auth/session'
 import { getUserByEmail } from '@server/queries'
 import { redirect } from 'next/navigation'
 
@@ -43,7 +43,7 @@ export async function authenticate(
 }
 
 export async function logout() {
-  const { deleteSession } = await import('@/lib/session')
+  const { deleteSession } = await import('@server/auth/session')
   await deleteSession()
   redirect('/login')
 }
