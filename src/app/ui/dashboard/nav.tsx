@@ -29,6 +29,7 @@ import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { logout } from "@/app/login/actions";
+import { clearUserData } from "@/lib/clearClientData";
 import type { User } from "@/lib/definitions";
 
 const navItems = [
@@ -63,6 +64,12 @@ export default function Nav({
     };
 
     const handleLogout = async () => {
+        // Clear browser data first (best-effort), then call server logout
+        try {
+            await clearUserData();
+        } catch (e) {
+            // don't block logout on client-side cleanup
+        }
         await logout();
     };
 

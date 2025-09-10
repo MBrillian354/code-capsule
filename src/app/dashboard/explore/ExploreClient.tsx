@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { logout } from "@/app/login/actions";
+import { clearUserData } from "@/lib/clearClientData";
 import type { User } from "@/lib/definitions";
 
 export default function ExploreClient({
@@ -42,6 +43,11 @@ export default function ExploreClient({
     };
 
     const handleLogout = async () => {
+        try {
+            await clearUserData();
+        } catch (e) {
+            // ignore
+        }
         await logout();
     };
 
