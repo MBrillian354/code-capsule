@@ -26,7 +26,7 @@ export default function Page() {
     );
 
     return (
-        <Box className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Box className="min-h-screen flex items-center justify-center px-2 bg-gray-50">
             <Paper
                 elevation={0}
                 variant="outlined"

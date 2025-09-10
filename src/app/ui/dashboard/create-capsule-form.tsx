@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import CodeIcon from "@mui/icons-material/Code";
 import { useActionState } from "react";
-import { createCapsule } from "../../dashboard/actions";
+import { createCapsule } from "../../dashboard/(overview)/actions";
 
 export default function CreateCapsuleForm() {
     const [errorMessage, formAction, isPending] = useActionState(
