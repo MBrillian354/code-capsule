@@ -1,5 +1,3 @@
-"use client";
-
 import React, { Suspense } from "react";
 import {
     Box,
@@ -7,26 +5,32 @@ import {
     Card,
     CardContent,
     Typography,
-    TextField,
-    InputAdornment,
     LinearProgress,
     Divider,
-    Button,
-    Stack,
 } from "@mui/material";
-import CodeIcon from "@mui/icons-material/Code";
-import {
-    continueLearningSample,
-    recentlySavedSamples as recentlyCreatedSamples,
-} from "./placeholder-data";
-import { useActionState } from "react";
-import { createCapsule } from "./actions";
+import { getContinueLearningCapsule, getRecentlyCreatedCapsules } from "@/lib/dal";
+import { verifySession } from "@/lib/dal";
+import type { StoredCapsuleContent } from "@/lib/definitions";
+import CreateCapsuleForm from "./create-capsule-form";
 
-export default function Page() {
-    const [errorMessage, formAction, isPending] = useActionState(
-        createCapsule,
-        undefined
-    );
+export default async function Page() {
+    // Verify session and get user ID
+    const session = await verifySession();
+    
+    // Fetch continue learning capsule
+    const continueLearningSample = await getContinueLearningCapsule(session.userId);
+    
+    // Get recently created capsules (limit to 3)
+    const recentlyCreatedSamples = await getRecentlyCreatedCapsules(session.userId, 3);
+    
+    // Extract description from content for display
+    const getDescription = (capsule: Record<string, unknown>): string => {
+        if (capsule.content && typeof capsule.content === 'object' && 'meta' in capsule.content) {
+            const content = capsule.content as StoredCapsuleContent;
+            return content.meta?.description || "No description available";
+        }
+        return "No description available";
+    };
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -52,42 +56,45 @@ export default function Page() {
                                     "!important": { paddingBottom: 0 },
                                 }}
                             >
-                                <Typography variant="h6">
-                                    {continueLearningSample.title}
-                                </Typography>
-                                <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    sx={{ mt: 1 }}
-                                >
-                                    {continueLearningSample.description}
-                                </Typography>
-
-                                {/* progress area pushed to the bottom */}
-                                <Box sx={{ mt: "auto" }}>
-                                    <Box
-                                        sx={{
-                                            display: "flex",
-                                            justifyContent: "flex-end",
-                                        }}
-                                    >
-                                        <Typography
-                                            variant="caption"
-                                            color="text.secondary"
-                                        >
-                                            {
-                                                continueLearningSample.overall_progress
-                                            }
-                                            % completed
+                                {continueLearningSample ? (
+                                    <>
+                                        <Typography variant="h6">
+                                            {continueLearningSample.title}
                                         </Typography>
-                                    </Box>
-                                    <LinearProgress
-                                        variant="determinate"
-                                        value={
-                                            continueLearningSample.overall_progress
-                                        }
-                                    />
-                                </Box>
+                                        <Typography
+                                            variant="body2"
+                                            color="text.secondary"
+                                            sx={{ mt: 1 }}
+                                        >
+                                            {getDescription(continueLearningSample)}
+                                        </Typography>
+
+                                        {/* progress area pushed to the bottom */}
+                                        <Box sx={{ mt: "auto" }}>
+                                            <Box
+                                                sx={{
+                                                    display: "flex",
+                                                    justifyContent: "flex-end",
+                                                }}
+                                            >
+                                                <Typography
+                                                    variant="caption"
+                                                    color="text.secondary"
+                                                >
+                                                    {Math.round(continueLearningSample.overall_progress || 0)}% completed
+                                                </Typography>
+                                            </Box>
+                                            <LinearProgress
+                                                variant="determinate"
+                                                value={continueLearningSample.overall_progress || 0}
+                                            />
+                                        </Box>
+                                    </>
+                                ) : (
+                                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", alignSelf: "center" }}>
+                                        No capsules in progress. Create your first capsule below!
+                                    </Typography>
+                                )}
                             </CardContent>
                         </Card>
                     </Box>
@@ -106,71 +113,37 @@ export default function Page() {
                                     gap: 1,
                                 }}
                             >
-                                {recentlyCreatedSamples.map((resource, index) => (
-                                    <Box key={resource.id}>
-                                        <Typography variant="h6">
-                                            {resource.title}
-                                        </Typography>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                            sx={{ mb: 1 }}
-                                        >
-                                            {resource.description}
-                                        </Typography>
-                                        {index <
-                                            recentlyCreatedSamples.length - 1 && (
-                                            <Divider />
-                                        )}
-                                    </Box>
-                                ))}
+                                {recentlyCreatedSamples.length > 0 ? (
+                                    recentlyCreatedSamples.map((resource, index) => (
+                                        <Box key={resource.id}>
+                                            <Typography variant="h6">
+                                                {resource.title}
+                                            </Typography>
+                                            <Typography
+                                                variant="body2"
+                                                color="text.secondary"
+                                                sx={{ mb: 1 }}
+                                            >
+                                                {getDescription(resource)}
+                                            </Typography>
+                                            {index < recentlyCreatedSamples.length - 1 && (
+                                                <Divider />
+                                            )}
+                                        </Box>
+                                    ))
+                                ) : (
+                                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: "center", alignSelf: "center" }}>
+                                        No capsules created yet. Create your first capsule below!
+                                    </Typography>
+                                )}
                             </CardContent>
                         </Card>
                     </Box>
                 </Grid>
                 <Grid size={12}>
                     <Suspense>
-                        <Stack
-                            component="form"
-                            action={formAction}
-                            direction="row"
-                            spacing={1}
-                        >
-                            <TextField
-                                name="url"
-                                fullWidth
-                                variant="outlined"
-                                sx={{ backgroundColor: "white", flex: 1 }}
-                                placeholder="Enter URL to convert into a capsule..."
-                                disabled={isPending}
-                                slotProps={{
-                                    input: {
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <CodeIcon />
-                                            </InputAdornment>
-                                        ),
-                                    },
-                                }}
-                            />
-                            <Button
-                                variant="contained"
-                                type="submit"
-                                disabled={isPending}
-                            >
-                                {isPending ? "Creating..." : "Create"}
-                            </Button>
-                        </Stack>
+                        <CreateCapsuleForm />
                     </Suspense>
-                    {errorMessage && (
-                        <Typography
-                            variant="body2"
-                            color="error"
-                            sx={{ mt: 1 }}
-                        >
-                            {errorMessage}
-                        </Typography>
-                    )}
                 </Grid>
             </Grid>
         </Box>

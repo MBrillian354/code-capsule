@@ -256,6 +256,78 @@ export const getUserCapsulesWithProgress = cache(async (userId: string) => {
     }
 });
 
+export const getContinueLearningCapsule = cache(async (userId: string) => {
+    /**
+     * Fetch the capsule with the highest progress for "Continue Learning".
+     * Filters capsules with overall_progress > 0, sorted by last_accessed DESC NULLS LAST, then created_at DESC.
+     *
+     * Parameters:
+     * - userId: string - the ID of the user
+     *
+     * Returns:
+     * - Capsule object with progress or null if none found
+     */
+    try {
+        const capsules = await sql`
+            SELECT 
+                c.id, 
+                c.title, 
+                c.total_pages, 
+                c.created_at, 
+                c.content,
+                uc.last_page_read,
+                uc.overall_progress,
+                uc.bookmarked_date,
+                uc.last_accessed
+            FROM capsules c
+            LEFT JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId}
+            WHERE c.created_by = ${userId} AND uc.overall_progress > 0 AND uc.overall_progress IS NOT NULL
+            ORDER BY uc.last_accessed DESC NULLS LAST, c.created_at DESC
+            LIMIT 1
+        `;
+        return capsules[0] || null;
+    } catch (error) {
+        console.log("Failed to fetch continue learning capsule", error);
+        return null;
+    }
+});
+
+export const getRecentlyCreatedCapsules = cache(async (userId: string, limit: number = 3) => {
+    /**
+     * Fetch recently created capsules for a user, sorted by creation date DESC.
+     *
+     * Parameters:
+     * - userId: string - the ID of the user
+     * - limit: number - maximum number of capsules to return (default 3)
+     *
+     * Returns:
+     * - Array of capsule objects with progress information
+     */
+    try {
+        const capsules = await sql`
+            SELECT 
+                c.id, 
+                c.title, 
+                c.total_pages, 
+                c.created_at, 
+                c.content,
+                uc.last_page_read,
+                uc.overall_progress,
+                uc.bookmarked_date,
+                uc.last_accessed
+            FROM capsules c
+            LEFT JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId}
+            WHERE c.created_by = ${userId}
+            ORDER BY c.created_at DESC
+            LIMIT ${limit}
+        `;
+        return capsules;
+    } catch (error) {
+        console.log("Failed to fetch recently created capsules", error);
+        return [];
+    }
+});
+
 export const getCapsule = cache(async (capsuleId: string) => {
     /**
      * Fetch a specific capsule by ID.
