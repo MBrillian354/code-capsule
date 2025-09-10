@@ -100,7 +100,7 @@ export default function PublicLearnClient({
                     spacing={2}
                 >
                     <Typography variant="body2">
-                        You&apos;re reading as a guest. Sign up to save your
+                        You&apos;re learning as a guest. Sign up to save your
                         progress and create your own capsules!
                     </Typography>
                 </Stack>

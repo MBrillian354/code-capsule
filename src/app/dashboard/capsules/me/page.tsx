@@ -201,7 +201,7 @@ export default async function Page() {
                                                 component={Link}
                                                 href={`/dashboard/capsule/${capsule.id}/learn`}
                                             >
-                                                {capsule.last_accessed ? 'Continue Reading' : 'Start Reading'}
+                                                {capsule.last_accessed ? 'Continue Learning' : 'Start Learning'}
                                             </Button>
                                             <IconButton>
                                                 <Share />

@@ -1,4 +1,4 @@
-// Client-side helpers for capsule reading progress
+// Client-side helpers for capsule learning progress
 
 export function computeProgress(lastPage: number, total: number) {
   if (!total) return 0;

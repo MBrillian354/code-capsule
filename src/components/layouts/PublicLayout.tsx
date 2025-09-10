@@ -54,7 +54,6 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 sx={{
                     flexGrow: 1,
                     p: { xs: 2, md: 3 },
-                    maxWidth: "1200px",
                     mx: "auto",
                     width: "100%",
                 }}

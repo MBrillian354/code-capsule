@@ -93,7 +93,7 @@ export default async function Page() {
                                             <Box sx={{ mt: 2 }}>
                                                 <Link href={`/dashboard/capsule/${continueLearningCapsule.id}/learn`}>
                                                     <Button variant="contained" color="primary">
-                                                        Continue Reading
+                                                        Continue Learning
                                                     </Button>
                                                 </Link>
                                             </Box>
@@ -138,7 +138,7 @@ export default async function Page() {
                                             <Box sx={{ mb: 1 }}>
                                                 <Link href={`/dashboard/capsule/${resource.id}/learn`}>
                                                     <Button variant="contained" color="primary" size="small">
-                                                        Start Reading
+                                                        Start Learning
                                                     </Button>
                                                 </Link>
                                             </Box>
