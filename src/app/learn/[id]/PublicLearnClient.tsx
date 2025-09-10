@@ -1,7 +1,15 @@
 "use client";
 
 import React from "react";
-import { Box, Button, Card, LinearProgress, Typography, Alert, Stack } from "@mui/material";
+import {
+    Box,
+    Button,
+    Card,
+    LinearProgress,
+    Typography,
+    Alert,
+    Stack,
+} from "@mui/material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { marked } from "marked";
 import Link from "next/link";
@@ -16,7 +24,11 @@ function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
 }
 
-export default function PublicLearnClient({ capsule }: { capsule: CapsuleClient }) {
+export default function PublicLearnClient({
+    capsule,
+}: {
+    capsule: CapsuleClient;
+}) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -26,9 +38,7 @@ export default function PublicLearnClient({ capsule }: { capsule: CapsuleClient 
     const saved = getSavedProgress(capsule.id);
 
     const initialPage = clamp(
-        initialFromQuery ||
-            saved?.last_page_read ||
-            1,
+        initialFromQuery || saved?.last_page_read || 1,
         1,
         totalPages
     );
@@ -43,18 +53,18 @@ export default function PublicLearnClient({ capsule }: { capsule: CapsuleClient 
         const params = new URLSearchParams(searchParams.toString());
         params.set("p", String(page));
         router.replace(`${pathname}?${params.toString()}`);
-        
+
         // Update progress state
         const newLast = Math.max(saved?.last_page_read || 0, page);
         const newProgress = computeProgress(newLast, totalPages);
         setProgress(newProgress);
-        
+
         // Save to localStorage for immediate feedback (guest users)
         setSavedProgress(capsule.id, {
             last_page_read: newLast,
             overall_progress: newProgress,
         });
-        
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page]);
 
@@ -76,35 +86,23 @@ export default function PublicLearnClient({ capsule }: { capsule: CapsuleClient 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pb: 6 }}>
             {/* Authentication notice for non-authenticated users */}
-            <Alert 
-                severity="info" 
-                sx={{ 
+            <Alert
+                severity="info"
+                sx={{
                     borderRadius: 2,
-                    "& .MuiAlert-message": { width: "100%" }
+                    "& .MuiAlert-message": { width: "100%" },
                 }}
             >
-                <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "stretch", sm: "center" }} spacing={2}>
+                <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    justifyContent="space-between"
+                    alignItems={{ xs: "stretch", sm: "center" }}
+                    spacing={2}
+                >
                     <Typography variant="body2">
-                        You&apos;re reading as a guest. Sign up to save your progress and create your own capsules!
+                        You&apos;re reading as a guest. Sign up to save your
+                        progress and create your own capsules!
                     </Typography>
-                    <Stack direction="row" spacing={1}>
-                        <Button
-                            component={Link}
-                            href="/login"
-                            variant="outlined"
-                            size="small"
-                        >
-                            Sign In
-                        </Button>
-                        <Button
-                            component={Link}
-                            href="/signup"
-                            variant="contained"
-                            size="small"
-                        >
-                            Sign Up
-                        </Button>
-                    </Stack>
                 </Stack>
             </Alert>
 
@@ -138,13 +136,14 @@ export default function PublicLearnClient({ capsule }: { capsule: CapsuleClient 
                         >
                             {capsule.title}
                         </Typography>
-                        <Typography
-                            variant="subtitle2"
-                        >
+                        <Typography variant="subtitle2">
                             {current.page_title || `Page ${page}`}
                         </Typography>
                         {capsule.creator_name && (
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
                                 by {capsule.creator_name}
                             </Typography>
                         )}
@@ -200,7 +199,7 @@ export default function PublicLearnClient({ capsule }: { capsule: CapsuleClient 
                     >
                         Previous
                     </Button>
-                    
+
                     <Stack direction="row" spacing={1} alignItems="center">
                         <Button
                             component={Link}

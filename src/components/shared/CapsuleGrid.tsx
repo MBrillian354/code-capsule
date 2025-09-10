@@ -21,20 +21,22 @@ interface CapsuleGridProps {
     onBookmarkToggle?: (capsuleId: string, isBookmarked: boolean) => void;
 }
 
-export default function CapsuleGrid({ 
-    capsules, 
-    showBookmark = false, 
+export default function CapsuleGrid({
+    capsules,
+    showBookmark = false,
     isAuthenticated = false,
     learnPath = "/learn",
     emptyStateConfig,
-    onBookmarkToggle 
+    onBookmarkToggle,
 }: CapsuleGridProps) {
     if (capsules.length === 0) {
         const defaultEmptyState = {
             title: "No capsules available yet",
             description: "Be the first to create and share a learning capsule!",
-            actionText: isAuthenticated ? "Create First Capsule" : "Join to Create",
-            actionHref: isAuthenticated ? "/dashboard/capsule/create" : "/signup"
+            actionText: isAuthenticated
+                ? "Create First Capsule"
+                : "Join to Create",
+            actionHref: isAuthenticated ? "/dashboard" : "/signup",
         };
 
         const emptyState = emptyStateConfig || defaultEmptyState;
@@ -42,11 +44,21 @@ export default function CapsuleGrid({
         return (
             <Card variant="outlined">
                 <CardContent sx={{ textAlign: "center", py: 6 }}>
-                    <MenuBookIcon sx={{ fontSize: 64, color: "text.secondary", mb: 2 }} />
-                    <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+                    <MenuBookIcon
+                        sx={{ fontSize: 64, color: "text.secondary", mb: 2 }}
+                    />
+                    <Typography
+                        variant="h6"
+                        color="text.secondary"
+                        sx={{ mb: 1 }}
+                    >
                         {emptyState.title}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ mb: 3 }}
+                    >
                         {emptyState.description}
                     </Typography>
                     <Button

@@ -1,8 +1,24 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, AppBar, Toolbar, Typography, Button, Stack, Avatar, Menu, MenuItem, Divider, IconButton } from "@mui/material";
-import { Menu as MenuIcon, Logout, PersonOutlineOutlined as PersonOutlineOutlinedIcon } from "@mui/icons-material";
+import {
+    Box,
+    AppBar,
+    Toolbar,
+    Typography,
+    Button,
+    Stack,
+    Avatar,
+    Menu,
+    MenuItem,
+    Divider,
+    IconButton,
+} from "@mui/material";
+import {
+    Menu as MenuIcon,
+    Logout,
+    PersonOutlineOutlined as PersonOutlineOutlinedIcon,
+} from "@mui/icons-material";
 import Link from "next/link";
 import Image from "next/image";
 import { logout } from "@/app/login/actions";
@@ -16,11 +32,11 @@ export default function ExploreClient({
     user: User | null;
 }) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    
+
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
-    
+
     const handleClose = () => {
         setAnchorEl(null);
     };
@@ -30,64 +46,13 @@ export default function ExploreClient({
     };
 
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-            {/* Top Navigation Bar */}
-            <AppBar position="static" color="transparent" elevation={0}>
-                <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                        <Image
-                            src="/vercel.svg"
-                            alt="Logo"
-                            width={24}
-                            height={24}
-                        />
-                        <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                            CodeCapsule
-                        </Typography>
-                    </Stack>
-                    
-                    <Stack direction="row" alignItems="center" spacing={2}>
-                        {user ? (
-                            <>
-                                <Button
-                                    component={Link}
-                                    href="/dashboard"
-                                    color="inherit"
-                                >
-                                    Dashboard
-                                </Button>
-                                <IconButton
-                                    color="inherit"
-                                    aria-label="user menu"
-                                    onClick={handleMenu}
-                                >
-                                    <Avatar sx={{ bgcolor: "secondary.main" }} />
-                                </IconButton>
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    component={Link}
-                                    href="/login"
-                                    color="inherit"
-                                >
-                                    Log in
-                                </Button>
-                                <Button
-                                    component={Link}
-                                    href="/signup"
-                                    variant="contained"
-                                    color="primary"
-                                    size="small"
-                                >
-                                    Sign up
-                                </Button>
-                            </>
-                        )}
-                    </Stack>
-                </Toolbar>
-            </AppBar>
-
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
+            }}
+        >
             {/* Main Content */}
             <Box
                 component="main"
@@ -158,7 +123,8 @@ export default function ExploreClient({
                         href="/profile"
                         className="flex items-center gap-2"
                     >
-                        <PersonOutlineOutlinedIcon fontSize="small" /> My Account
+                        <PersonOutlineOutlinedIcon fontSize="small" /> My
+                        Account
                     </MenuItem>
                     <MenuItem
                         onClick={() => {

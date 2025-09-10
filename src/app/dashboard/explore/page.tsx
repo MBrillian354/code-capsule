@@ -66,7 +66,7 @@ export default async function DashboardExplorePage() {
                     </Typography>
                     <Button
                         component={Link}
-                        href="/dashboard/capsule/create"
+                        href="/dashboard"
                         variant="contained"
                         color="primary"
                     >
@@ -83,7 +83,7 @@ export default async function DashboardExplorePage() {
                         title: "No capsules available yet",
                         description: "Be the first to create and share a learning capsule!",
                         actionText: "Create First Capsule",
-                        actionHref: "/dashboard/capsule/create"
+                        actionHref: "/dashboard"
                     }}
                 />
             </Box>
