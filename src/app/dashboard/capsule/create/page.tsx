@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import { Box, Typography, LinearProgress, Paper, Stack, Button } from "@mui/material";
+import {
+    Box,
+    Typography,
+    LinearProgress,
+    Paper,
+    Stack,
+    Button,
+} from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { CreateCapsuleApiResult } from "@/types/capsule";
 import type { ProgressUpdate, ProgressStep } from "@/lib/validators";
@@ -174,8 +181,6 @@ export default function CreateCapsulePage() {
         const handleBeforeUnload = (e: BeforeUnloadEvent) => {
             if (isProcessing) {
                 e.preventDefault();
-                e.returnValue =
-                    "Creating capsule in progress. Leaving will abort the process.";
                 return "Creating capsule in progress. Leaving will abort the process.";
             }
         };

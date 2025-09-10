@@ -1,59 +1,124 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CodeCapsule
 
-## Getting Started
+A modern learning platform that transforms articles and web content into structured, trackable learning experiences.
 
-First, run the development server:
+Website is live at https://code-capsule-orcin.vercel.app/
+
+## Project Overview
+
+CodeCapsule is a full-stack web application that allows users to:
+
+-   **Capture Content**: Paste any URL to automatically extract and convert articles into `capsules`
+-   **Track Progress**: Track learning progress by chapter
+-   **Explore**: Browse capsules created by the community
+-   **Bookmark**: Save your favorite capsules for easy access
+
+## Technology Stack
+
+-   **Frontend**: Next.js 15, React 19, Material-UI 7, TypeScript
+-   **Backend**: Next.js API Routes, Node.js
+-   **Database**: PostgreSQL
+-   **AI Integration**: DeepSeek API
+-   **Authentication**: Jose (JWT) with secure cookie storage
+-   **Styling**: Material-UI with Emotion, Tailwind CSS
+
+## Prerequisites
+
+-   Node.js 18.0 or higher
+-   PostgreSQL database
+-   pnpm (recommended) or npm/yarn
+-   DeepSeek API key
+
+## Quick Start
+
+### 1. Clone the Repository
 
 ```bash
-npm run dev
+git clone https://github.com/mbrillian354/code-capsule.git
+cd code-capsule
+```
+
+### 2. Install Dependencies
+
+```bash
+pnpm install
 # or
-yarn dev
-# or
+npm install
+```
+
+### 3. Set Up Environment Variables
+
+Create a `.env.local` file in the root directory. An example file `.env.example` is provided.
+
+### 4. Set Up Database
+
+Make sure PostgreSQL is running and create your database:
+
+```bash
+# Run database migrations
+pnpm seed
+```
+
+### 5. Start Development Server
+
+```bash
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the application running.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-## Environment variables
-
-Create a `.env.local` file with:
+## 🏗️ Project Structure
 
 ```
-POSTGRES_URL=postgresql://...
-DEEPSEEK_API_KEY=sk-...
-# Optional: override base URL for DeepSeek
-# DEEPSEEK_BASE_URL=https://api.deepseek.com
+src/
+├── app/                 # Next.js App Router pages
+│   ├── api/             # Public API routes
+│   ├── dashboard/       # Authenticated user dashboard page
+│   ├── explore/         # Public capsule exploration
+│   ├── learn/           # Public Learning interface
+│   └── ui/              # Global styles and theme
+├── components/          # Reusable React components
+│   ├── layouts/         # Layout components
+│   └── shared/          # Shared UI components
+├── lib/                 # Utility functions and client-side logic
+└── server/              # Server-side logic
+    ├── auth/            # Authentication utilities
+    ├── db/              # Database client
+    ├── queries/         # Database queries
+    ├── repositories/    # Data access layer
+    └── services/        # Business logic services
 
-# Needed so server action can call internal API during dev
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
 ```
 
-## Capsule creation pipeline
+## Available Scripts
 
-POST `/api/capsule/create` with body `{ url: string }` will:
-- validate URL, fetch & extract main content
-- convert to Markdown and chunk
-- call DeepSeek to generate a Capsule (title, description, pages)
-- validate shape and persist to `capsules`
-- return `{ ok: true, id }` on success
+-   `pnpm dev` - Start development server with Turbopack
+-   `pnpm build` - Build for production
+-   `pnpm start` - Start production server
+-   `pnpm lint` - Run ESLint
+-   `pnpm seed` - Seed database
+
+## How It Works
+
+### Capsule Creation Pipeline
+
+The core feature of CodeCapsule is converting web articles into a structured learning module called `Capsules`:
+
+1. **URL Submission**: POST to `/api/capsule/create` with `{ url: string }`
+2. **Content Extraction**: Validate URL, fetch and extract main content using Mozilla Readability
+3. **Content Processing**: Convert HTML to Markdown and perform chunking
+4. **AI**: Use DeepSeek API to generate capsule
+5. **Validation & Storage**: Validate content shape and insert to PostgreSQL database
+
+### User Journey
+
+1. **Open the web**: User begin from a landing page
+2. **Explore**: Browse community capsules
+3. **Sign Up/Login**: Log in to create and save capsules
+4. **Create Capsules**: Insert a URL, wait for conversion to finish
+5. **Learn**: Read through capsules and track your learning progress
+6. **Bookmark**: Save favorite capsule for easer access
+
+### Health Check
+
+-   `GET /api/health` - Service health status

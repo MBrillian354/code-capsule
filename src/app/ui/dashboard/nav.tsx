@@ -35,7 +35,11 @@ const navItems = [
     { href: "/dashboard", icon: DashboardIcon, primary: "Dashboard" },
     { href: "/dashboard/explore", icon: ExploreIcon, primary: "Explore" },
     { href: "/dashboard/bookmarks", icon: BookmarkIcon, primary: "Bookmarks" },
-    { href: "/dashboard/capsules/me", icon: ViewAgendaOutlined, primary: "My Capsules" },
+    {
+        href: "/dashboard/capsules/me",
+        icon: ViewAgendaOutlined,
+        primary: "My Capsules",
+    },
 ];
 
 export const drawerWidthOpen = 240;
@@ -66,7 +70,7 @@ export default function Nav({
         // Clear browser data first (best-effort), then call server logout
         try {
             await clearUserData();
-    } catch {
+        } catch {
             // don't block logout on client-side cleanup
         }
         await logout();
@@ -228,6 +232,7 @@ export default function Nav({
                     component={Link}
                     href="/dashboard"
                     className="flex items-center gap-2"
+                    disabled={true}
                 >
                     <Avatar sx={{ bgcolor: "secondary.main" }} />
                     <Typography>{user?.name || "User"}</Typography>
@@ -238,6 +243,7 @@ export default function Nav({
                     component={Link}
                     href="/profile"
                     className="flex items-center gap-2"
+                    disabled={true}
                 >
                     <PersonOutlineOutlinedIcon fontSize="small" /> My Account
                 </MenuItem>
