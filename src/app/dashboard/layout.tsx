@@ -1,6 +1,6 @@
 import React from 'react'
 import { verifySession, getUser } from '@/lib/dal'
-import DashboardClient from '@/app/dashboard/dashboard-client'
+import DashboardClient from '@/app/ui/dashboard/dashboard-client'
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
   // This will redirect to login if not authenticated

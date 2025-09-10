@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Box } from "@mui/material";
-import Nav from "../ui/dashboard/nav";
+import Nav from "./nav";
 import type { User } from "@/lib/definitions";
 
 export default function DashboardClient({

@@ -11,7 +11,7 @@ import {
 import { getContinueLearningCapsule, getRecentlyCreatedCapsules } from "@/lib/dal";
 import { verifySession } from "@/lib/dal";
 import type { StoredCapsuleContent } from "@/lib/definitions";
-import CreateCapsuleForm from "./create-capsule-form";
+import CreateCapsuleForm from "../ui/dashboard/create-capsule-form";
 
 export default async function Page() {
     // Verify session and get user ID
