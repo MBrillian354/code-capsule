@@ -14,11 +14,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { marked } from "marked";
 import Link from "next/link";
 import type { CapsuleClient } from "@/types/capsule";
-import {
-    computeProgress,
-    getSavedProgress,
-    setSavedProgress,
-} from "@/lib/client/capsuleProgress";
+import { computeProgress } from "@/lib/client/capsuleProgress";
 
 function clamp(n: number, min: number, max: number) {
     return Math.max(min, Math.min(max, n));
@@ -35,17 +31,11 @@ export default function PublicLearnClient({
 
     const totalPages = capsule.content.length;
     const initialFromQuery = Number(searchParams.get("p")) || 0;
-    const saved = getSavedProgress(capsule.id);
-
-    const initialPage = clamp(
-        initialFromQuery || saved?.last_page_read || 1,
-        1,
-        totalPages
-    );
+    const initialPage = clamp(initialFromQuery || 1, 1, totalPages);
 
     const [page, setPage] = React.useState<number>(initialPage);
     const [progress, setProgress] = React.useState<number>(
-        computeProgress(Math.max(saved?.last_page_read || 0, page), totalPages)
+        computeProgress(page, totalPages)
     );
 
     // Sync URL when page changes
@@ -55,15 +45,8 @@ export default function PublicLearnClient({
         router.replace(`${pathname}?${params.toString()}`);
 
         // Update progress state
-        const newLast = Math.max(saved?.last_page_read || 0, page);
-        const newProgress = computeProgress(newLast, totalPages);
+    const newProgress = computeProgress(page, totalPages);
         setProgress(newProgress);
-
-        // Save to localStorage for immediate feedback (guest users)
-        setSavedProgress(capsule.id, {
-            last_page_read: newLast,
-            overall_progress: newProgress,
-        });
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page]);
@@ -85,25 +68,11 @@ export default function PublicLearnClient({
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pb: 6 }}>
-            {/* Authentication notice for non-authenticated users */}
-            <Alert
-                severity="info"
-                sx={{
-                    borderRadius: 2,
-                    "& .MuiAlert-message": { width: "100%" },
-                }}
-            >
-                <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    justifyContent="space-between"
-                    alignItems={{ xs: "stretch", sm: "center" }}
-                    spacing={2}
-                >
-                    <Typography variant="body2">
-                        You&apos;re learning as a guest. Sign up to save your
-                        progress and create your own capsules!
-                    </Typography>
-                </Stack>
+            {/* Public view notice */}
+            <Alert severity="info" sx={{ borderRadius: 2 }}>
+                <Typography variant="body2">
+                    Sign in to save progress.
+                </Typography>
             </Alert>
 
             {/* Sticky progress/header bar */}

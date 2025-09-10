@@ -11,3 +11,6 @@ export default async function Layout({ children }: { children: React.ReactNode }
 
   return <DashboardClient user={user}>{children}</DashboardClient>
 }
+
+// Personalized dashboard must be dynamic
+export const dynamic = 'force-dynamic'

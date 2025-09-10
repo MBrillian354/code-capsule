@@ -53,3 +53,6 @@ export default async function PublicLearnPage(props: {
 
     return <PublicLearnClient capsule={capsuleForClient} />;
 }
+
+// Revalidate public learn pages periodically
+export const revalidate = 600;
