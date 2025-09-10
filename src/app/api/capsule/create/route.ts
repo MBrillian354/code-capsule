@@ -3,6 +3,10 @@ import { CreateByUrlSchema } from "@/lib/validators";
 import { requireUserId } from "@server/auth/session";
 import { createCapsuleFromUrlService } from "@server/services/capsules.service";
 
+// Ensure Node.js runtime (not Edge) and allow longer processing time on Vercel
+export const runtime = "nodejs";
+export const maxDuration = 180; // seconds
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
