@@ -7,7 +7,9 @@ import {
     Typography,
     LinearProgress,
     Divider,
+    Button,
 } from "@mui/material";
+import Link from "next/link";
 import { getContinueLearningCapsule, getRecentlyCreatedCapsules } from "@/lib/dal";
 import { verifySession } from "@/lib/dal";
 import type { StoredCapsuleContent } from "@/lib/definitions";
@@ -18,10 +20,10 @@ export default async function Page() {
     const session = await verifySession();
     
     // Fetch continue learning capsule
-    const continueLearningSample = await getContinueLearningCapsule(session.userId);
+    const continueLearningCapsule = await getContinueLearningCapsule(session.userId);
     
     // Get recently created capsules (limit to 3)
-    const recentlyCreatedSamples = await getRecentlyCreatedCapsules(session.userId, 3);
+    const recentlyCreatedCapsules = await getRecentlyCreatedCapsules(session.userId, 2);
     
     // Extract description from content for display
     const getDescription = (capsule: Record<string, unknown>): string => {
@@ -56,17 +58,17 @@ export default async function Page() {
                                     "!important": { paddingBottom: 0 },
                                 }}
                             >
-                                {continueLearningSample ? (
+                                {continueLearningCapsule ? (
                                     <>
                                         <Typography variant="h6">
-                                            {continueLearningSample.title}
+                                            {continueLearningCapsule.title}
                                         </Typography>
                                         <Typography
                                             variant="body2"
                                             color="text.secondary"
                                             sx={{ mt: 1 }}
                                         >
-                                            {getDescription(continueLearningSample)}
+                                            {getDescription(continueLearningCapsule)}
                                         </Typography>
 
                                         {/* progress area pushed to the bottom */}
@@ -81,13 +83,20 @@ export default async function Page() {
                                                     variant="caption"
                                                     color="text.secondary"
                                                 >
-                                                    {Math.round(continueLearningSample.overall_progress || 0)}% completed
+                                                    {Math.round(continueLearningCapsule.overall_progress || 0)}% completed
                                                 </Typography>
                                             </Box>
                                             <LinearProgress
                                                 variant="determinate"
-                                                value={continueLearningSample.overall_progress || 0}
+                                                value={continueLearningCapsule.overall_progress || 0}
                                             />
+                                            <Box sx={{ mt: 2 }}>
+                                                <Link href={`/dashboard/capsule/${continueLearningCapsule.id}/learn`}>
+                                                    <Button variant="contained" color="primary">
+                                                        Continue Reading
+                                                    </Button>
+                                                </Link>
+                                            </Box>
                                         </Box>
                                     </>
                                 ) : (
@@ -113,8 +122,8 @@ export default async function Page() {
                                     gap: 1,
                                 }}
                             >
-                                {recentlyCreatedSamples.length > 0 ? (
-                                    recentlyCreatedSamples.map((resource, index) => (
+                                {recentlyCreatedCapsules.length > 0 ? (
+                                    recentlyCreatedCapsules.map((resource, index) => (
                                         <Box key={resource.id}>
                                             <Typography variant="h6">
                                                 {resource.title}
@@ -126,7 +135,14 @@ export default async function Page() {
                                             >
                                                 {getDescription(resource)}
                                             </Typography>
-                                            {index < recentlyCreatedSamples.length - 1 && (
+                                            <Box sx={{ mb: 1 }}>
+                                                <Link href={`/dashboard/capsule/${resource.id}/learn`}>
+                                                    <Button variant="contained" color="primary" size="small">
+                                                        Start Reading
+                                                    </Button>
+                                                </Link>
+                                            </Box>
+                                            {index < recentlyCreatedCapsules.length - 1 && (
                                                 <Divider />
                                             )}
                                         </Box>
