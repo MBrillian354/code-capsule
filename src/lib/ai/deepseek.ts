@@ -29,6 +29,7 @@ export async function generateCapsuleWithDeepseek(input: {
   chunkSummaries: { index: number; text: string }[]
   model?: string
 }): Promise<CapsuleGen> {
+  console.log('generateCapsuleWithDeepseek: Starting with input:', { url: input.url, markdownLength: input.markdown.length, chunkSummariesCount: input.chunkSummaries.length, model: input.model })
   const model = input.model || 'deepseek-chat'
 
   const system = `You are a senior technical editor who transforms articles into structured learning capsules that guides learners in a step-by-step manner.
@@ -57,7 +58,10 @@ export async function generateCapsuleWithDeepseek(input: {
     ],
   })
 
+  console.log('generateCapsuleWithDeepseek: Creating DeepSeek client')
   const client = createDeepseekClient()
+  console.log('generateCapsuleWithDeepseek: Client created successfully')
+  console.log('generateCapsuleWithDeepseek: Sending request to AI with model:', model)
   const resp = await client.chat.completions.create({
     model,
     messages: [
@@ -72,6 +76,11 @@ export async function generateCapsuleWithDeepseek(input: {
     
   })
 
+  console.log('generateCapsuleWithDeepseek: Received response from AI')
   const content = resp.choices?.[0]?.message?.content || '{}'
-  return JSON.parse(content)
+  console.log('generateCapsuleWithDeepseek: Raw content length:', content.length)
+  console.log('generateCapsuleWithDeepseek: Parsing JSON response')
+  const parsed = JSON.parse(content)
+  console.log('generateCapsuleWithDeepseek: Successfully parsed response, returning capsule with title:', parsed.title)
+  return parsed
 }
