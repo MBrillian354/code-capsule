@@ -10,16 +10,17 @@ export function isValidHttpUrl(raw: string): boolean {
     if (!['http:', 'https:'].includes(u.protocol)) return false
     // Disallow obvious local/private
     const host = u.hostname.toLowerCase()
-    if (
-      host === 'localhost' ||
-      host.endsWith('.local') ||
-      /^\d+\.\d+\.\d+\.\d+$/.test(host) && (
+    if (process.env.BLOCK_PRIVATE_URLS === '1') {
+      const isIp = /^\d+\.\d+\.\d+\.\d+$/.test(host)
+      const isLocal = host === 'localhost' || host.endsWith('.local') || host.endsWith('.home')
+      const isPrivateIp = isIp && (
         host.startsWith('10.') ||
         host.startsWith('127.') ||
         host.startsWith('192.168.') ||
         host.startsWith('172.16.') || host.startsWith('172.17.') || host.startsWith('172.18.') || host.startsWith('172.19.') || host.startsWith('172.2')
       )
-    ) return false
+      if (isLocal || isPrivateIp) return false
+    }
     return true
   } catch {
     return false
