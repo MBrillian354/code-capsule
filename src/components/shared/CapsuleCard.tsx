@@ -26,18 +26,22 @@ interface CapsuleCardProps {
     onBookmarkToggle?: (capsuleId: string, isBookmarked: boolean) => void;
 }
 
-export default function CapsuleCard({ 
-    capsule, 
-    showBookmark = false, 
+export default function CapsuleCard({
+    capsule,
+    showBookmark = false,
     isAuthenticated = false,
     learnPath = "/learn",
-    onBookmarkToggle 
+    onBookmarkToggle,
 }: CapsuleCardProps) {
     const isBookmarked = !!capsule.bookmarked_date;
 
     // Extract description from content
     const getDescription = (): string => {
-        if (capsule.content && typeof capsule.content === 'object' && 'meta' in capsule.content) {
+        if (
+            capsule.content &&
+            typeof capsule.content === "object" &&
+            "meta" in capsule.content
+        ) {
             const content = capsule.content as StoredCapsuleContent;
             return content.meta?.description || "No description available";
         }
@@ -46,10 +50,10 @@ export default function CapsuleCard({
 
     // Format date
     const formatDate = (dateString: string): string => {
-        return new Date(dateString).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
+        return new Date(dateString).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
         });
     };
 
@@ -62,21 +66,31 @@ export default function CapsuleCard({
     };
 
     return (
-        <Card 
-            variant="outlined" 
-            sx={{ 
-                height: "100%", 
-                display: "flex", 
+        <Card
+            variant="outlined"
+            sx={{
+                height: "100%",
+                display: "flex",
                 flexDirection: "column",
                 transition: "transform 0.2s ease-in-out",
                 "&:hover": {
                     transform: "translateY(-2px)",
-                }
+                },
             }}
         >
-            <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
-                <Stack direction="row" justifyContent="space-between" alignItems="flex-start" sx={{ mb: 2 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600, flexGrow: 1, pr: 1 }}>
+            <CardContent
+                sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+            >
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    sx={{ mb: 2 }}
+                >
+                    <Typography
+                        variant="h6"
+                        sx={{ fontWeight: 600, flexGrow: 1, pr: 1 }}
+                    >
                         {capsule.title}
                     </Typography>
                     {showBookmark && isAuthenticated && (
@@ -85,11 +99,15 @@ export default function CapsuleCard({
                             onClick={handleBookmarkClick}
                             color={isBookmarked ? "primary" : "default"}
                         >
-                            {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                            {isBookmarked ? (
+                                <BookmarkIcon />
+                            ) : (
+                                <BookmarkBorderIcon />
+                            )}
                         </IconButton>
                     )}
                 </Stack>
-                
+
                 <Typography
                     variant="body2"
                     color="text.secondary"
@@ -111,13 +129,20 @@ export default function CapsuleCard({
                     />
                 </Stack>
 
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
                     <Typography variant="caption" color="text.secondary">
                         by {capsule.creator_name || "Anonymous"}
                     </Typography>
                     <Button
                         component={Link}
-                        href={`${learnPath}/${capsule.id}/learn`}
+                        href={
+                            `${learnPath}/${capsule.id}` +
+                            (isAuthenticated ? `/learn` : "")
+                        }
                         variant="contained"
                         color="primary"
                         size="small"
