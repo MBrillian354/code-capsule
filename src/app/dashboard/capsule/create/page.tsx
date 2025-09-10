@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import {
-    Box,
-    Typography,
-    LinearProgress,
-    Paper,
-    Stack,
-    Button,
-    CircularProgress,
-} from "@mui/material";
+import { Box, Typography, LinearProgress, Paper, Stack, Button } from "@mui/material";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { CreateCapsuleApiResult } from "@/types/capsule";
 import type { ProgressUpdate, ProgressStep } from "@/lib/validators";

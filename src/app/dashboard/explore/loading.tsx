@@ -1,16 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-    Box,
-    Grid,
-    Card,
-    CardContent,
-    Skeleton,
-    Typography,
-    Stack,
-    Button,
-} from "@mui/material";
+import { Box, Grid, Card, CardContent, Skeleton, Stack } from "@mui/material";
 
 export default function Loading() {
     return (

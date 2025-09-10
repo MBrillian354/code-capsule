@@ -45,7 +45,7 @@ export async function createCapsuleFromUrl(
     let html: string;
     try {
         html = await fetchHtml(url);
-    } catch (e) {
+    } catch {
         return { ok: false, error: "Failed to fetch URL" };
     }
 
@@ -80,7 +80,7 @@ export async function createCapsuleFromUrl(
             markdown,
             chunkSummaries,
         });
-    } catch (e) {
+    } catch {
         return { ok: false, error: "AI generation failed" };
     }
 

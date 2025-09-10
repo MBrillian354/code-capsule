@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
-import Link from "next/link";
+import { Box, Typography } from "@mui/material";
 import CapsuleGrid from "@/components/shared/CapsuleGrid";
 import type { CapsuleCardData } from "@/components/shared/types";
 import { toggleBookmark } from "@/lib/client/bookmarks";
@@ -73,7 +72,7 @@ export default function BookmarksClient({
                     color="text.secondary"
                     sx={{ maxWidth: 800 }}
                 >
-                    Quick access to the capsules you've bookmarked for later learning.
+                    Quick access to the capsules you&#39;ve bookmarked for later learning.
                 </Typography>
             </Box>
 

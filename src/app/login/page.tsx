@@ -14,12 +14,12 @@ import {
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import { useActionState } from "react";
-import { useSearchParams } from "next/navigation";
+// import { useSearchParams } from "next/navigation";
 import { authenticate } from "@/app/login/actions";
 
 export default function Page() {
-    const searchParams = useSearchParams();
-    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+    // const searchParams = useSearchParams();
+    // const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
     const [errorMessage, formAction, isPending] = useActionState(
         authenticate,
         undefined

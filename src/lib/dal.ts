@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { decrypt } from "@/lib/session";
 import { redirect } from "next/navigation";
 import postgres from "postgres";
-import type { User, Capsule, UserCapsule } from "@/lib/definitions";
+import type { User } from "@/lib/definitions";
 import { z } from "zod";
 
 /**
@@ -97,7 +97,7 @@ export const getUser = cache(async () => {
     `;
         const user = users[0];
         return user;
-    } catch (error) {
+    } catch {
         console.log("Failed to fetch user");
         return null;
     }
@@ -122,7 +122,7 @@ export const getUserByEmail = cache(async (email: string) => {
       SELECT * FROM users WHERE email = ${email}
     `;
         return users[0];
-    } catch (error) {
+    } catch {
         console.log("Failed to fetch user by email");
         return null;
     }
@@ -154,7 +154,7 @@ export const createUser = async (
       VALUES (${userId}, ${name}, ${email}, ${hashedPassword})
     `;
         return userId;
-    } catch (error) {
+    } catch {
         console.log("Failed to create user");
         throw new Error("Failed to create user");
     }

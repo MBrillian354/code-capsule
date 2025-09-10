@@ -8,13 +8,13 @@ export async function clearUserData(): Promise<void> {
     // Clear storages
     try {
       localStorage.clear();
-    } catch (e) {
+  } catch {
       // ignore
     }
 
     try {
       sessionStorage.clear();
-    } catch (e) {
+  } catch {
       // ignore
     }
 
@@ -28,7 +28,7 @@ export async function clearUserData(): Promise<void> {
         document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
         document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${location.pathname}`;
       }
-    } catch (e) {
+  } catch {
       // ignore
     }
 
@@ -38,7 +38,7 @@ export async function clearUserData(): Promise<void> {
         const keys = await caches.keys();
         await Promise.all(keys.map((k) => caches.delete(k)));
       }
-    } catch (e) {
+  } catch {
       // ignore
     }
 
@@ -71,7 +71,7 @@ export async function clearUserData(): Promise<void> {
     try {
       localStorage.setItem("codecapsule:logout", Date.now().toString());
       localStorage.removeItem("codecapsule:logout");
-    } catch (e) {
+  } catch {
       // ignore
     }
   } catch {
