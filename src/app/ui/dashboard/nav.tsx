@@ -19,9 +19,8 @@ import {
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
 import {
-    Dashboard as DashboardIcon,
-    Search as SearchIcon,
-    Bookmark as BookmarkIcon,
+    DashboardOutlined as DashboardIcon,
+    ExploreOutlined as ExploreIcon,
     Menu as MenuIcon,
     Logout, ViewAgendaOutlined
 } from "@mui/icons-material";
@@ -33,7 +32,7 @@ import type { User } from "@/lib/definitions";
 
 const navItems = [
     { href: "/dashboard", icon: DashboardIcon, primary: "Dashboard" },
-    { href: "/dashboard/explore", icon: SearchIcon, primary: "Explore" },
+    { href: "/dashboard/explore", icon: ExploreIcon, primary: "Explore" },
     { href: "/dashboard/capsules/me", icon: ViewAgendaOutlined, primary: "My Capsules" },
 ];
 
@@ -232,7 +231,7 @@ export default function Nav({
                     href="/profile"
                     className="flex items-center gap-2"
                 >
-                    <PersonOutlineOutlinedIcon fontSize="small" /> Profile
+                    <PersonOutlineOutlinedIcon fontSize="small" /> My Account
                 </MenuItem>
                 <MenuItem
                     onClick={() => {
