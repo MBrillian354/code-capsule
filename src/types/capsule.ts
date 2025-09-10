@@ -18,4 +18,6 @@ export type CapsuleClient = {
   overall_progress?: number
   bookmarked_date?: string
   last_accessed?: string
+  creator_name?: string
+  created_at?: string
 }

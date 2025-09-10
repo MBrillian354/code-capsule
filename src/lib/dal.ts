@@ -474,3 +474,91 @@ export const upsertUserCapsule = async (params: {
         throw new Error("Failed to save user capsule progress");
     }
 };
+
+export const getAllPublicCapsules = cache(async (limit: number = 20, offset: number = 0) => {
+    /**
+     * Fetch all public capsules for the explore page, sorted by creation date (newest first).
+     *
+     * Parameters:
+     * - limit: number - maximum number of capsules to return (default 20)
+     * - offset: number - number of capsules to skip for pagination (default 0)
+     *
+     * Returns:
+     * - Array of capsule objects with basic info for exploration
+     * - Empty array if no capsules found or on error
+     */
+    try {
+        const capsules = await sql`
+            SELECT 
+                c.id, 
+                c.title, 
+                c.total_pages, 
+                c.created_at, 
+                c.content,
+                u.name as creator_name
+            FROM capsules c
+            LEFT JOIN users u ON c.created_by = u.id
+            ORDER BY c.created_at DESC
+            LIMIT ${limit} OFFSET ${offset}
+        `;
+
+        return capsules;
+    } catch (error) {
+        console.log("Failed to fetch public capsules", error);
+        return [];
+    }
+});
+
+export const getCapsuleWithUserProgress = cache(async (capsuleId: string, userId?: string | null) => {
+    /**
+     * Fetch a specific capsule with user progress if authenticated.
+     *
+     * Parameters:
+     * - capsuleId: string - the ID of the capsule to fetch
+     * - userId: string | null - the ID of the user (optional for public access)
+     *
+     * Returns:
+     * - Capsule object with progress information or null if not found
+     */
+    try {
+        if (userId) {
+            const capsules = await sql`
+                SELECT 
+                    c.id, 
+                    c.title, 
+                    c.total_pages, 
+                    c.created_at, 
+                    c.content,
+                    c.created_by,
+                    u.name as creator_name,
+                    uc.last_page_read,
+                    uc.overall_progress,
+                    uc.bookmarked_date,
+                    uc.last_accessed
+                FROM capsules c
+                LEFT JOIN users u ON c.created_by = u.id
+                LEFT JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId}
+                WHERE c.id = ${capsuleId}
+            `;
+            return capsules[0] || null;
+        } else {
+            const capsules = await sql`
+                SELECT 
+                    c.id, 
+                    c.title, 
+                    c.total_pages, 
+                    c.created_at, 
+                    c.content,
+                    c.created_by,
+                    u.name as creator_name
+                FROM capsules c
+                LEFT JOIN users u ON c.created_by = u.id
+                WHERE c.id = ${capsuleId}
+            `;
+            return capsules[0] || null;
+        }
+    } catch (error) {
+        console.log("Failed to fetch capsule with user progress", error);
+        return null;
+    }
+});
