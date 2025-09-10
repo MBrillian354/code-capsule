@@ -94,13 +94,13 @@ export default function Page() {
                             >
                                 <Button
                                     component={Link}
-                                    href="/login?callbackUrl=%2Fdashboard"
+                                    href="/explore"
                                     size="large"
                                     variant="contained"
                                     color="primary"
                                     startIcon={<RocketLaunchIcon />}
                                 >
-                                    Start free
+                                    Explore Capsules
                                 </Button>
                                 <Button
                                     component={Link}
