@@ -1,26 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-    Box,
-    AppBar,
-    Toolbar,
-    Typography,
-    Button,
-    Stack,
-    Avatar,
-    Menu,
-    MenuItem,
-    Divider,
-    IconButton,
-} from "@mui/material";
-import {
-    Menu as MenuIcon,
-    Logout,
-    PersonOutlineOutlined as PersonOutlineOutlinedIcon,
-} from "@mui/icons-material";
+import React from "react";
+import { Box, Avatar, Menu, MenuItem, Divider, Typography } from "@mui/material";
+import Logout from "@mui/icons-material/Logout";
+import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Link from "next/link";
-import Image from "next/image";
 import { logout } from "@/app/login/actions";
 import { clearUserData } from "@/lib/clearClientData";
 import type { User } from "@/lib/definitions";
@@ -34,6 +18,7 @@ export default function ExploreClient({
 }) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -45,7 +30,7 @@ export default function ExploreClient({
     const handleLogout = async () => {
         try {
             await clearUserData();
-        } catch (e) {
+    } catch {
             // ignore
         }
         await logout();

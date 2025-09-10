@@ -45,6 +45,7 @@ export async function saveProgressToDatabase(
         overallProgress,
         lastAccessed: new Date().toISOString()
       }),
+      keepalive: true,
     });
   } catch (error) {
     // Best-effort only; server is source of truth eventually
@@ -61,9 +62,50 @@ export async function updateLastAccessed(capsuleId: string) {
         capsuleId,
         lastAccessed: new Date().toISOString()
       }),
+      keepalive: true,
     });
   } catch (error) {
     // Best-effort only; server is source of truth eventually
     console.warn("Failed to update last accessed time:", error);
+  }
+}
+
+// Debounced save helper to limit network chatter
+const debouncers = new Map<string, number>();
+
+export function debouncedSaveProgress(
+  capsuleId: string,
+  lastPageRead: number,
+  overallProgress: number,
+  delay = 600
+) {
+  if (typeof window === 'undefined') return;
+  const key = storageKey(capsuleId);
+  const existing = debouncers.get(key);
+  if (existing) window.clearTimeout(existing);
+  const timeout = window.setTimeout(() => {
+    saveProgressToDatabase(capsuleId, lastPageRead, overallProgress);
+    debouncers.delete(key);
+  }, delay);
+  debouncers.set(key, timeout);
+}
+
+// Attempt to persist latest progress reliably on unload
+export function sendBeaconProgress(
+  capsuleId: string,
+  lastPageRead: number,
+  overallProgress: number
+) {
+  if (typeof navigator === 'undefined' || !navigator.sendBeacon) return false;
+  const payload = JSON.stringify({
+    capsuleId,
+    lastPageRead,
+    overallProgress,
+    lastAccessed: new Date().toISOString(),
+  });
+  try {
+    return navigator.sendBeacon('/api/capsule/progress', new Blob([payload], { type: 'application/json' }));
+  } catch {
+    return false;
   }
 }

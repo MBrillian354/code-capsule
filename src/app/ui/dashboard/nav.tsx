@@ -18,13 +18,12 @@ import {
 } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import {
-    DashboardOutlined as DashboardIcon,
-    ExploreOutlined as ExploreIcon,
-    BookmarkBorderOutlined as BookmarkIcon,
-    Menu as MenuIcon,
-    Logout, ViewAgendaOutlined
-} from "@mui/icons-material";
+import DashboardIcon from "@mui/icons-material/DashboardOutlined";
+import ExploreIcon from "@mui/icons-material/ExploreOutlined";
+import BookmarkIcon from "@mui/icons-material/BookmarkBorderOutlined";
+import MenuIcon from "@mui/icons-material/Menu";
+import Logout from "@mui/icons-material/Logout";
+import ViewAgendaOutlined from "@mui/icons-material/ViewAgendaOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -56,8 +55,8 @@ export default function Nav({
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
+    const handleMenu = (_event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(_event.currentTarget);
     };
     const handleClose = () => {
         setAnchorEl(null);
@@ -67,7 +66,7 @@ export default function Nav({
         // Clear browser data first (best-effort), then call server logout
         try {
             await clearUserData();
-        } catch (e) {
+    } catch {
             // don't block logout on client-side cleanup
         }
         await logout();

@@ -15,13 +15,11 @@ import {
     Chip,
     Stack,
 } from "@mui/material";
-import {
-    RocketLaunch as RocketLaunchIcon,
-    BookmarkBorder as BookmarkBorderIcon,
-    Search as SearchIcon,
-    School as SchoolIcon,
-    Bolt as BoltIcon,
-} from "@mui/icons-material";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import SearchIcon from "@mui/icons-material/Search";
+import SchoolIcon from "@mui/icons-material/School";
+import BoltIcon from "@mui/icons-material/Bolt";
 
 export default function Page() {
     return (
@@ -160,6 +158,7 @@ export default function Page() {
                                     alt="App preview"
                                     fill
                                     priority
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 50vw"
                                     style={{ objectFit: "cover" }}
                                 />
                             </Box>

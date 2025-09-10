@@ -11,7 +11,9 @@ export default async function middleware(req: NextRequest) {
   const cookie = req.cookies.get('session')?.value
   const session = await decrypt(cookie)
 
-  console.log('Middleware session:', session)
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Middleware session:', session)
+  }
 
   // Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !session?.userId) {
@@ -42,5 +44,8 @@ export default async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+  // Exclude API and static assets
+  matcher: [
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|css|js|map|txt|woff2|ttf)$).*)',
+  ],
 }

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Grid, Card, CardContent, Typography, Button } from "@mui/material";
-import { MenuBook as MenuBookIcon } from "@mui/icons-material";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import Link from "next/link";
 import CapsuleCard from "./CapsuleCard";
 import type { CapsuleCardData } from "./types";

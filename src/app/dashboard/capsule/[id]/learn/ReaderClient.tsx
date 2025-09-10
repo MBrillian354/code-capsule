@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
     Box,
     Button,
@@ -12,20 +12,18 @@ import {
     IconButton,
     Tooltip,
 } from "@mui/material";
-import {
-    BookmarkBorder as BookmarkBorderIcon,
-    Bookmark as BookmarkIcon,
-} from "@mui/icons-material";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { marked } from "marked";
 import Link from "next/link";
 import type { CapsuleClient } from "@/types/capsule";
 import {
     computeProgress,
     getSavedProgress,
     setSavedProgress,
-    saveProgressToDatabase,
+    debouncedSaveProgress,
     updateLastAccessed,
+    sendBeaconProgress,
 } from "@/lib/client/capsuleProgress";
 import { toggleBookmark } from "@/lib/client/bookmarks";
 
@@ -68,14 +66,14 @@ export default function ReaderClient({
     );
 
     // Update last accessed timestamp when component mounts (only if authenticated)
-    React.useEffect(() => {
+    useEffect(() => {
         if (isAuthenticated) {
             updateLastAccessed(capsule.id);
         }
     }, [capsule.id, isAuthenticated]);
 
     // Sync URL when page changes
-    React.useEffect(() => {
+    useEffect(() => {
         const params = new URLSearchParams(searchParams.toString());
         params.set("p", String(page));
         router.replace(`${pathname}?${params.toString()}`);
@@ -93,14 +91,14 @@ export default function ReaderClient({
 
         // Save to database only if authenticated
         if (isAuthenticated) {
-            saveProgressToDatabase(capsule.id, newLast, newProgress);
+            debouncedSaveProgress(capsule.id, newLast, newProgress);
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, isAuthenticated]);
 
     // Clamp to valid page if query outside range
-    React.useEffect(() => {
+    useEffect(() => {
         const p = Number(searchParams.get("p"));
         if (!p) return;
         const clamped = clamp(p, 1, totalPages);
@@ -127,6 +125,42 @@ export default function ReaderClient({
 
     const goPrev = () => setPage((p) => clamp(p - 1, 1, totalPages));
     const goNext = () => setPage((p) => clamp(p + 1, 1, totalPages));
+
+    // Lazy-load marked only on client when needed
+    const [markedFn, setMarkedFn] = useState<null | ((md: string) => string)>(null);
+    useEffect(() => {
+        let active = true;
+        (async () => {
+            const { marked } = await import("marked");
+            if (!active) return;
+            setMarkedFn(() => (md: string) => marked.parse(md) as string);
+        })();
+        return () => { active = false; };
+    }, []);
+
+    // Memoize parsed HTML for current page
+    const parsedHtml = useMemo(() => {
+        if (!markedFn) return "";
+        return markedFn(current.body);
+    }, [markedFn, current.body]);
+
+    // Persist progress on unload (best-effort)
+    const lastPersist = useRef({ page, progress });
+    useEffect(() => { lastPersist.current = { page, progress }; }, [page, progress]);
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        const handler = () => {
+            const last = lastPersist.current.page;
+            const prog = lastPersist.current.progress;
+            sendBeaconProgress(capsule.id, last, prog);
+        };
+        window.addEventListener('pagehide', handler);
+        window.addEventListener('beforeunload', handler);
+        return () => {
+            window.removeEventListener('pagehide', handler);
+            window.removeEventListener('beforeunload', handler);
+        };
+    }, [capsule.id, isAuthenticated]);
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pb: 6 }}>
@@ -234,9 +268,7 @@ export default function ReaderClient({
                 <article
                     className="markdown"
                     // We trust placeholder content here; in production sanitize.
-                    dangerouslySetInnerHTML={{
-                        __html: marked.parse(current.body) as string,
-                    }}
+                    dangerouslySetInnerHTML={{ __html: parsedHtml }}
                     style={{
                         lineHeight: 1.7,
                         fontSize: "1.05rem",

@@ -2,11 +2,9 @@
 
 import React from "react";
 import { Grid, Card, CardContent, Typography } from "@mui/material";
-import {
-    AccessTime as AccessTimeIcon,
-    Person as PersonIcon,
-    MenuBook as MenuBookIcon,
-} from "@mui/icons-material";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import PersonIcon from "@mui/icons-material/Person";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import type { CapsuleStatsProps } from "./types";
 
 export default function CapsuleStats({ data }: CapsuleStatsProps) {

@@ -10,10 +10,8 @@ import {
     Stack,
     IconButton,
 } from "@mui/material";
-import {
-    BookmarkBorder as BookmarkBorderIcon,
-    Bookmark as BookmarkIcon,
-} from "@mui/icons-material";
+import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
+import BookmarkIcon from "@mui/icons-material/Bookmark";
 import Link from "next/link";
 import type { StoredCapsuleContent } from "@/lib/definitions";
 import type { CapsuleCardData } from "./types";

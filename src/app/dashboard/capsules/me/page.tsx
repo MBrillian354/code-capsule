@@ -14,7 +14,7 @@ import { verifySession, getUserCapsulesWithProgress } from "@/lib/dal";
 import type { CapsuleWithProgress } from "@/lib/definitions";
 import Link from "next/link";
 import IconButton from "@mui/material/IconButton";
-import { Share } from "@mui/icons-material";
+import Share from "@mui/icons-material/Share";
 
 export default async function Page() {
     try {
