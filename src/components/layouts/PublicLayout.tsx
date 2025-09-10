@@ -11,7 +11,13 @@ interface PublicLayoutProps {
 
 export default function PublicLayout({ children }: PublicLayoutProps) {
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <Box
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
+            }}
+        >
             {/* Top Navigation Bar */}
             <AppBar position="static" color="transparent" elevation={0}>
                 <Toolbar sx={{ justifyContent: "space-between", py: 1 }}>
@@ -26,13 +32,9 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                             CodeCapsule
                         </Typography>
                     </Stack>
-                    
+
                     <Stack direction="row" alignItems="center" spacing={2}>
-                        <Button
-                            component={Link}
-                            href="/login"
-                            color="inherit"
-                        >
+                        <Button component={Link} href="/login" color="inherit">
                             Log in
                         </Button>
                         <Button
@@ -54,9 +56,9 @@ export default function PublicLayout({ children }: PublicLayoutProps) {
                 sx={{
                     flexGrow: 1,
                     p: { xs: 2, md: 3 },
-                    mx: "auto",
                     width: "100%",
                 }}
+                className="max-w-6xl mx-auto"
             >
                 {children}
             </Box>
