@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
     Box,
     Button,
@@ -9,7 +9,13 @@ import {
     Typography,
     Alert,
     Stack,
+    IconButton,
+    Tooltip,
 } from "@mui/material";
+import {
+    BookmarkBorder as BookmarkBorderIcon,
+    Bookmark as BookmarkIcon,
+} from "@mui/icons-material";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { marked } from "marked";
 import Link from "next/link";
@@ -21,6 +27,7 @@ import {
     saveProgressToDatabase,
     updateLastAccessed,
 } from "@/lib/client/capsuleProgress";
+import { toggleBookmark } from "@/lib/client/bookmarks";
 
 // CapsuleClient type imported from shared types
 
@@ -38,6 +45,9 @@ export default function ReaderClient({
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    
+    // Bookmark state
+    const [isBookmarked, setIsBookmarked] = useState(!!capsule.bookmarked_date);
 
     const totalPages = capsule.content.length;
     const initialFromQuery = Number(searchParams.get("p")) || 0;
@@ -100,6 +110,20 @@ export default function ReaderClient({
 
     const current =
         capsule.content.find((c) => c.page === page) || capsule.content[0];
+
+    const handleBookmarkToggle = async () => {
+        if (!isAuthenticated) return;
+        
+        try {
+            const newBookmarkState = !isBookmarked;
+            setIsBookmarked(newBookmarkState);
+            await toggleBookmark(capsule.id, newBookmarkState);
+        } catch (error) {
+            // Revert on error
+            setIsBookmarked(!isBookmarked);
+            console.error("Failed to toggle bookmark:", error);
+        }
+    };
 
     const goPrev = () => setPage((p) => clamp(p - 1, 1, totalPages));
     const goNext = () => setPage((p) => clamp(p + 1, 1, totalPages));
@@ -171,13 +195,26 @@ export default function ReaderClient({
                             </Typography>
                         )}
                     </Box>
-                    <Box sx={{ textAlign: "right" }}>
-                        <Typography variant="body2" color="text.secondary">
-                            Chapter {page}/{totalPages}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {Math.round(progress)}% complete
-                        </Typography>
+                    <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1 }}>
+                        <Box sx={{ textAlign: "right" }}>
+                            <Typography variant="body2" color="text.secondary">
+                                Chapter {page}/{totalPages}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {Math.round(progress)}% complete
+                            </Typography>
+                        </Box>
+                        {isAuthenticated && (
+                            <Tooltip title={isBookmarked ? "Remove bookmark" : "Add bookmark"}>
+                                <IconButton
+                                    size="small"
+                                    onClick={handleBookmarkToggle}
+                                    color={isBookmarked ? "primary" : "default"}
+                                >
+                                    {isBookmarked ? <BookmarkIcon /> : <BookmarkBorderIcon />}
+                                </IconButton>
+                            </Tooltip>
+                        )}
                     </Box>
                 </Box>
                 <LinearProgress variant="determinate" value={progress} />

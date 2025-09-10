@@ -117,7 +117,7 @@ export default function CapsuleCard({
                     </Typography>
                     <Button
                         component={Link}
-                        href={`${learnPath}/${capsule.id}`}
+                        href={`${learnPath}/${capsule.id}/learn`}
                         variant="contained"
                         color="primary"
                         size="small"

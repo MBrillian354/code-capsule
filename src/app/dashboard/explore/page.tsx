@@ -1,17 +1,14 @@
 import React from "react";
-import { Box, Typography, Button } from "@mui/material";
-import Link from "next/link";
-import { getAllPublicCapsules, getSession } from "@/lib/dal";
-import CapsuleGrid from "@/components/shared/CapsuleGrid";
-import CapsuleStats from "@/components/shared/CapsuleStats";
+import { getAllPublicCapsulesWithUserProgress, getSession } from "@/lib/dal";
+import DashboardExploreContent from "./DashboardExploreContent";
 import type { CapsuleCardData, CapsuleStatsData } from "@/components/shared/types";
 
 export default async function DashboardExplorePage() {
     // Always get session for authenticated dashboard pages
     const session = await getSession();
     
-    // Fetch public capsules
-    const capsules = await getAllPublicCapsules(20, 0);
+    // Fetch public capsules with user progress
+    const capsules = await getAllPublicCapsulesWithUserProgress(session.userId || null, 20, 0);
     
     // Transform data for components
     const capsuleData: CapsuleCardData[] = capsules.map(capsule => ({
@@ -24,69 +21,17 @@ export default async function DashboardExplorePage() {
         created_at: capsule.created_at,
         creator_name: capsule.creator_name || "Anonymous",
         learn_url: `/dashboard/capsule/${capsule.id}/learn`,
-        content: capsule.content // Keep the original content for the card component
+        content: capsule.content, // Keep the original content for the card component
+        bookmarked_date: (capsule as any).bookmarked_date || null,
+        last_page_read: (capsule as any).last_page_read || null,
+        overall_progress: (capsule as any).overall_progress || null,
     }));
 
     const statsData: CapsuleStatsData = {
         totalCapsules: capsules.length,
-        totalContributors: new Set(capsules.map(c => c.created_by)).size,
+        totalContributors: new Set(capsules.map(c => (c as any).created_by)).size,
         totalPages: capsules.reduce((acc, c) => acc + (c.total_pages || 0), 0)
     };
 
-    return (
-        <Box sx={{ flexGrow: 1 }}>
-            {/* Dashboard Header */}
-            <Box sx={{ mb: 4 }}>
-                <Typography
-                    variant="h4"
-                    sx={{ fontWeight: 600, mb: 2 }}
-                >
-                    Explore Learning Capsules
-                </Typography>
-                <Typography
-                    variant="body1"
-                    color="text.secondary"
-                    sx={{ maxWidth: 800 }}
-                >
-                    Discover and learn from capsules created by the community. Bookmark your favorites and track your progress as you explore new topics.
-                </Typography>
-            </Box>
-
-            {/* Stats */}
-            <CapsuleStats data={statsData} />
-
-            {/* Capsules Grid */}
-            <Box sx={{ mt: 4 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <Typography
-                        variant="h5"
-                        sx={{ fontWeight: 600 }}
-                    >
-                        Latest Capsules
-                    </Typography>
-                    <Button
-                        component={Link}
-                        href="/dashboard"
-                        variant="contained"
-                        color="primary"
-                    >
-                        Create Capsule
-                    </Button>
-                </Box>
-                
-                <CapsuleGrid 
-                    capsules={capsuleData}
-                    showBookmark={true}
-                    isAuthenticated={true}
-                    learnPath="/dashboard/capsule"
-                    emptyStateConfig={{
-                        title: "No capsules available yet",
-                        description: "Be the first to create and share a learning capsule!",
-                        actionText: "Create First Capsule",
-                        actionHref: "/dashboard"
-                    }}
-                />
-            </Box>
-        </Box>
-    );
+    return <DashboardExploreContent capsules={capsuleData} statsData={statsData} />;
 }

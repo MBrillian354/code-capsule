@@ -475,6 +475,47 @@ export const upsertUserCapsule = async (params: {
     }
 };
 
+export const getBookmarkedCapsules = cache(async (userId: string, limit: number = 20, offset: number = 0) => {
+    /**
+     * Fetch all bookmarked capsules for a user, sorted by bookmark date (newest first).
+     *
+     * Parameters:
+     * - userId: string - the ID of the user whose bookmarks to fetch
+     * - limit: number - maximum number of capsules to return (default 20)
+     * - offset: number - number of capsules to skip for pagination (default 0)
+     *
+     * Returns:
+     * - Array of capsule objects with progress information
+     * - Empty array if no bookmarks found or on error
+     */
+    try {
+        const capsules = await sql`
+            SELECT 
+                c.id, 
+                c.title, 
+                c.total_pages, 
+                c.created_at, 
+                c.content,
+                u.name as creator_name,
+                uc.last_page_read,
+                uc.overall_progress,
+                uc.bookmarked_date,
+                uc.last_accessed
+            FROM capsules c
+            JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId}
+            LEFT JOIN users u ON c.created_by = u.id
+            WHERE uc.bookmarked_date IS NOT NULL
+            ORDER BY uc.bookmarked_date DESC
+            LIMIT ${limit} OFFSET ${offset}
+        `;
+
+        return capsules;
+    } catch (error) {
+        console.log("Failed to fetch bookmarked capsules", error);
+        return [];
+    }
+});
+
 export const getAllPublicCapsules = cache(async (limit: number = 20, offset: number = 0) => {
     /**
      * Fetch all public capsules for the explore page, sorted by creation date (newest first).
@@ -505,6 +546,50 @@ export const getAllPublicCapsules = cache(async (limit: number = 20, offset: num
         return capsules;
     } catch (error) {
         console.log("Failed to fetch public capsules", error);
+        return [];
+    }
+});
+
+export const getAllPublicCapsulesWithUserProgress = cache(async (userId: string | null, limit: number = 20, offset: number = 0) => {
+    /**
+     * Fetch all public capsules with user progress if authenticated, sorted by creation date (newest first).
+     *
+     * Parameters:
+     * - userId: string | null - the ID of the user (optional for user-specific data)
+     * - limit: number - maximum number of capsules to return (default 20)
+     * - offset: number - number of capsules to skip for pagination (default 0)
+     *
+     * Returns:
+     * - Array of capsule objects with progress information if userId provided
+     * - Empty array if no capsules found or on error
+     */
+    try {
+        if (userId) {
+            const capsules = await sql`
+                SELECT 
+                    c.id, 
+                    c.title, 
+                    c.total_pages, 
+                    c.created_at, 
+                    c.content,
+                    u.name as creator_name,
+                    uc.last_page_read,
+                    uc.overall_progress,
+                    uc.bookmarked_date,
+                    uc.last_accessed
+                FROM capsules c
+                LEFT JOIN users u ON c.created_by = u.id
+                LEFT JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId}
+                ORDER BY c.created_at DESC
+                LIMIT ${limit} OFFSET ${offset}
+            `;
+            return capsules;
+        } else {
+            // If no userId, just fetch public capsules
+            return await getAllPublicCapsules(limit, offset);
+        }
+    } catch (error) {
+        console.log("Failed to fetch public capsules with user progress", error);
         return [];
     }
 });

@@ -21,6 +21,7 @@ import { useTheme } from "@mui/material/styles";
 import {
     DashboardOutlined as DashboardIcon,
     ExploreOutlined as ExploreIcon,
+    BookmarkBorderOutlined as BookmarkIcon,
     Menu as MenuIcon,
     Logout, ViewAgendaOutlined
 } from "@mui/icons-material";
@@ -33,6 +34,7 @@ import type { User } from "@/lib/definitions";
 const navItems = [
     { href: "/dashboard", icon: DashboardIcon, primary: "Dashboard" },
     { href: "/dashboard/explore", icon: ExploreIcon, primary: "Explore" },
+    { href: "/dashboard/bookmarks", icon: BookmarkIcon, primary: "Bookmarks" },
     { href: "/dashboard/capsules/me", icon: ViewAgendaOutlined, primary: "My Capsules" },
 ];
 
