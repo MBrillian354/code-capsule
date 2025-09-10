@@ -1,5 +1,5 @@
 import React from 'react'
-import { verifySession, getUser } from '@/lib/dal'
+import { verifySession, getUser } from '@server/queries'
 import DashboardClient from '@/app/ui/dashboard/dashboard-client'
 
 export default async function Layout({ children }: { children: React.ReactNode }) {

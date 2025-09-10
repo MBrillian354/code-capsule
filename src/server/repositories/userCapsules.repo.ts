@@ -43,7 +43,7 @@ export async function upsertUserCapsule(params: {
 }
 
 export async function listUserCapsules(userId: string) {
-  return await sql`SELECT id, title, total_pages, created_at, content, uc.last_page_read, uc.overall_progress, uc.bookmarked_date, uc.last_accessed FROM capsules c LEFT JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId} WHERE c.created_by = ${userId} ORDER BY uc.last_accessed DESC NULLS LAST, c.created_at DESC`
+  return await sql`SELECT c.id, title, total_pages, created_at, content, uc.last_page_read, uc.overall_progress, uc.bookmarked_date, uc.last_accessed FROM capsules c LEFT JOIN user_capsules uc ON c.id = uc.capsule_id AND uc.user_id = ${userId} WHERE c.created_by = ${userId} ORDER BY uc.last_accessed DESC NULLS LAST, c.created_at DESC`
 }
 
 export async function listBookmarkedCapsules(userId: string, limit = 20, offset = 0) {

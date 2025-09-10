@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCapsuleWithUserProgress, getSession } from "@/lib/dal";
+import { getCapsuleWithUserProgress, getSession } from "@server/queries";
 
 export async function GET(
   _request: NextRequest,

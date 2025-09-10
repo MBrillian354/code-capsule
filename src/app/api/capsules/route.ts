@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAllPublicCapsulesWithUserProgress, getSession } from "@/lib/dal";
+import { getAllPublicCapsulesWithUserProgress, getSession } from "@server/queries";
 
 function clamp(n: number, min: number, max: number) {
   return Math.max(min, Math.min(max, n));

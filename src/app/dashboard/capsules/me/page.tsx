@@ -10,7 +10,7 @@ import {
     Button,
     Alert,
 } from "@mui/material";
-import { verifySession, getUserCapsulesWithProgress } from "@/lib/dal";
+import { verifySession, getUserCapsulesWithProgress } from "@server/queries";
 import type { CapsuleWithProgress } from "@/lib/definitions";
 import Link from "next/link";
 import IconButton from "@mui/material/IconButton";
@@ -22,8 +22,7 @@ export default async function Page() {
         const session = await verifySession();
         
         // Fetch user's capsules with progress information
-        const capsulesResult = await getUserCapsulesWithProgress(session.userId);
-        const capsules = capsulesResult as CapsuleWithProgress[];
+    const capsules: CapsuleWithProgress[] = await getUserCapsulesWithProgress(session.userId) as unknown as CapsuleWithProgress[];
 
         const formatDate = (dateString: string) => {
             try {

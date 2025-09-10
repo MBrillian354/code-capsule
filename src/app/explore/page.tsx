@@ -1,5 +1,5 @@
 import React from "react";
-import { getAllPublicCapsules } from "@/lib/dal";
+import { getAllPublicCapsules } from "@server/queries";
 import ExploreClient from "./ExploreClient";
 import type { CapsuleCardData, CapsuleStatsData } from "@/components/shared/types";
 import type { StoredCapsuleContent } from "@/lib/definitions";

@@ -1,4 +1,4 @@
-import { getCapsuleWithUserProgress } from "@/lib/dal";
+import { getCapsuleWithUserProgress } from "@server/queries";
 import { notFound } from "next/navigation";
 import PublicLearnClient from "./PublicLearnClient";
 import type { StoredCapsuleContent } from "@/lib/definitions";

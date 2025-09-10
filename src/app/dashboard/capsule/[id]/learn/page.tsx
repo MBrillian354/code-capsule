@@ -1,4 +1,4 @@
-import { getCapsuleWithUserProgress, getSession } from "@/lib/dal";
+import { getCapsuleWithUserProgress, getSession } from "@server/queries";
 import { notFound } from "next/navigation";
 import ReaderClient from "./ReaderClient";
 import type { StoredCapsuleContent } from "@/lib/definitions";

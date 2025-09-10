@@ -10,8 +10,7 @@ import {
     Button,
 } from "@mui/material";
 import Link from "next/link";
-import { getContinueLearningCapsule, getRecentlyCreatedCapsules } from "@/lib/dal";
-import { verifySession } from "@/lib/dal";
+import { getContinueLearningCapsule, getRecentlyCreatedCapsules, verifySession } from "@server/queries";
 import type { StoredCapsuleContent } from "@/lib/definitions";
 import CreateCapsuleForm from "../../ui/dashboard/create-capsule-form";
 

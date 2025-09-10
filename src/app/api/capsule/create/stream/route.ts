@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server'
-import { createCapsuleFromUrl } from '@/lib/capsules'
 import { CreateByUrlSchema } from '@/lib/validators'
 import { sseFormat } from '@/lib/sse'
+import { requireUserId } from '@server/auth/session'
+import { createCapsuleFromUrlService } from '@server/services/capsules.service'
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
@@ -24,9 +25,10 @@ export async function GET(req: Request) {
         // Kick off progress
         send('progress', { step: 'fetching', message: 'Fetching content from URL...' })
 
-        const result = await createCapsuleFromUrl(parsed.data.url, (update) => {
+  const userId = await requireUserId()
+  const result = await createCapsuleFromUrlService({ url: parsed.data.url, userId, onProgress: (update) => {
           send('progress', update)
-        })
+  } })
 
         if (result.ok) {
           send('completed', { id: result.id })

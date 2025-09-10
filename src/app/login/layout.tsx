@@ -1,4 +1,4 @@
-import { getSession } from "@/lib/dal";
+import { getSession } from "@server/queries";
 import { redirect } from "next/navigation";
 
 export default async function Layout({

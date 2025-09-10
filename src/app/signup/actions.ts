@@ -3,7 +3,7 @@
 import { SignupSchema } from '@/lib/validators';
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
-import { getUserByEmail, createUser } from '@/lib/dal'
+import { getUserByEmail, createUser } from '@server/queries'
 import { redirect } from 'next/navigation'
 
 export async function createAccount(

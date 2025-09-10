@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { getBookmarkedCapsules, getSession } from "@/lib/dal";
+import { getBookmarkedCapsules, getSession } from "@server/queries";
 import type { CapsuleCardData } from "@/components/shared/types";
 import type { StoredCapsuleContent } from "@/lib/definitions";
 import BookmarksClient from "./BookmarksClient";

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { upsertUserCapsule, getSession } from "@/lib/dal";
+import { upsertUserCapsule, getSession } from "@server/queries";
 import { z } from "zod";
 import { UpdateProgressSchema } from "@/lib/validators";
 

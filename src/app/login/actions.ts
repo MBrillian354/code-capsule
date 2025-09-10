@@ -3,7 +3,7 @@
 import { LoginSchema } from '@/lib/validators';
 import bcrypt from 'bcryptjs'
 import { createSession } from '@/lib/session'
-import { getUserByEmail } from '@/lib/dal'
+import { getUserByEmail } from '@server/queries'
 import { redirect } from 'next/navigation'
 
 export async function authenticate(

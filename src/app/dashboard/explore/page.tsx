@@ -1,5 +1,5 @@
 import React from "react";
-import { getAllPublicCapsulesWithUserProgress, getSession } from "@/lib/dal";
+import { getAllPublicCapsulesWithUserProgress, getSession } from "@server/queries";
 import DashboardExploreContent from "./DashboardExploreContent";
 import type { CapsuleCardData, CapsuleStatsData } from "@/components/shared/types";
 import type { StoredCapsuleContent } from "@/lib/definitions";

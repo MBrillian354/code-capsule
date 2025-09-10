@@ -1,5 +1,5 @@
 import React from 'react'
-import { getSession, getUser } from '@/lib/dal'
+import { getSession, getUser } from '@server/queries'
 import ExploreClient from '../explore/ExploreClient'
 
 export default async function CapsuleLayout({ children }: { children: React.ReactNode }) {

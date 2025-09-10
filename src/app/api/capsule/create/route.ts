@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { createCapsuleFromUrl } from "@/lib/capsules";
 import { CreateByUrlSchema } from "@/lib/validators";
+import { requireUserId } from "@server/auth/session";
+import { createCapsuleFromUrlService } from "@server/services/capsules.service";
 
 export async function POST(request: Request) {
   try {
@@ -10,7 +11,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 })
     }
 
-    const result = await createCapsuleFromUrl(parsed.data.url)
+  const userId = await requireUserId()
+  const result = await createCapsuleFromUrlService({ url: parsed.data.url, userId })
     if (!('ok' in result) || result.ok !== true) {
       return NextResponse.json(result, { status: 400 })
     }
