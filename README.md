@@ -34,7 +34,7 @@ CodeCapsule is a full-stack web application that allows users to:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/mbrillian354/code-capsule.git
+git clone https://github.com/MBrillian354/code-capsule.git
 cd code-capsule
 ```
 
@@ -67,7 +67,7 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the application running.
 
-## 🏗️ Project Structure
+##  Project Structure
 
 ```
 src/
