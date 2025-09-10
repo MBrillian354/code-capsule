@@ -11,6 +11,7 @@ import {
 import { generateCapsuleWithDeepseek } from "@/lib/ai/deepseek";
 import { CapsuleSchema, ProgressUpdate } from "@/lib/validators";
 import { insertCapsule } from "@/lib/dal";
+import { revalidatePath } from "next/cache";
 
 export type CreateCapsuleResult =
     | { id: string; ok: true }
@@ -107,6 +108,15 @@ export async function createCapsuleFromUrl(
         created_by: session.userId!,
         created_at: new Date().toISOString(),
     });
+
+    // On-demand revalidation for pages using ISR
+    try {
+        revalidatePath("/explore");
+        revalidatePath("/dashboard/explore");
+        revalidatePath(`/learn/${id}`);
+    } catch {
+        // Best-effort: ignore revalidation errors
+    }
 
     return { ok: true, id };
 }
