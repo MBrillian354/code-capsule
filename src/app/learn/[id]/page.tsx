@@ -33,9 +33,9 @@ export default async function PublicLearnPage(props: {
             page_title: page.page_title || page.title || `Page ${index + 1}`,
             body: page.body || page.content || ""
         })),
-        last_page_read: 1, // Always start from page 1 for public users
-        overall_progress: 0, // No stored progress for public users
-        last_accessed: null,
+    last_page_read: 1, // Always start from page 1 for public users
+    overall_progress: 0, // No stored progress for public users
+    last_accessed: undefined,
         creator_name: capsule.creator_name || "Anonymous",
         created_at: capsule.created_at
     };
