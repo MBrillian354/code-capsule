@@ -70,10 +70,6 @@ export async function generateCapsuleWithDeepseek(input: {
     ],
     temperature: 0.3,
     response_format: { type: 'json_object' },
-    max_tokens: 8096,
-    frequency_penalty: -1.5,
-    presence_penalty: -1.0,
-    
   })
 
   console.log('generateCapsuleWithDeepseek: Received response from AI')
